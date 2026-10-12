@@ -1,0 +1,307 @@
+/* Rebuilt to match the Squarespace site's measurements. That layout is fluid with no maximum
+   width: a 10px page edge, a twelve-column grid inside it, and 34px gutters. The calc() values
+   below reproduce its column maths (measured at 390, 768, 1280, 1600, 1920 and 2400px).
+   Libre Bodoni and Outfit stand in for LTC Bodoni 175 and Sofia Pro, which were licensed through Squarespace.
+   Both are SIL Open Font License and self-hosted. */
+
+@font-face {
+  font-family: "Libre Bodoni";
+  src: url("/fonts/libre-bodoni.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/outfit.woff2") format("woff2");
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+:root {
+  --ink: #222;
+  --paper: #fff;
+  --black: #000;
+  --field: #fafafa;
+  --field-border: #a9a9a9;
+  --serif: "Libre Bodoni", "Bodoni 72", Didot, Georgia, serif;
+  --sans: "Outfit", "Helvetica Neue", Arial, sans-serif;
+  --edge: 10px;
+  --gap: 34px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--black);
+  color: var(--ink);
+  font: 300 15px/30px var(--sans);
+  letter-spacing: 0.15px;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+main { background: var(--paper); }
+
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus { left: 10px; top: 10px; z-index: 100; padding: 8px 12px; background: var(--paper); color: var(--ink); }
+
+/* Type */
+h1, .display {
+  margin: 0 0 33.5px;
+  font: 400 50px/57.5px var(--serif);
+  /* Libre Bodoni sets a touch wider than the original face; this keeps the same line breaks. */
+  letter-spacing: -1.6px;
+}
+h2, .heading {
+  margin: 24.9px 0;
+  font: 600 30px/36px var(--sans);
+  letter-spacing: -0.9px;
+}
+.heading { margin: 0 0 33px; }
+h3 {
+  margin: 15px 0;
+  font: 900 15px/30px var(--sans);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+p { margin: 0 0 15px; }
+ul { margin: 15px 0; padding-left: 40px; }
+li { margin-bottom: 7.5px; }
+strong { font-weight: 600; }
+.center { text-align: center; }
+
+/* Layout. The text column sits one grid column in from the page edge on each side. */
+.wrap { margin-inline: calc(var(--edge) + (100% - 2 * var(--edge)) / 12 + 3px); }
+.wide { margin-inline: var(--edge); }
+.content { padding: 71px 0; }
+.section { padding: 100px 0; }
+.section-tight { padding-top: 0; }
+.dark { background: var(--black); color: #fff; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: start; }
+.actions { margin-top: 30px; }
+
+/* Header */
+.site-header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 91px;
+  padding: 49px 21px 0 13px;
+  background: var(--paper);
+}
+.site-title {
+  font: 400 39.5px/42px var(--serif);
+  letter-spacing: -0.4px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.site-nav ul { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; }
+.site-nav li { position: relative; margin: 0 16.5px; }
+.site-nav a {
+  display: block;
+  padding: 7px 0;
+  font: 600 11px/11px var(--sans);
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.site-nav a:hover, .site-nav a:focus-visible { opacity: 0.6; }
+.site-nav .has-menu ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: -18px;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 260px;
+  padding: 12px 18px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.12);
+}
+.site-nav .has-menu:hover ul, .site-nav .has-menu:focus-within ul { display: flex; }
+.site-nav .has-menu li { margin: 0; }
+.site-nav .has-menu li a { padding: 9px 0; }
+
+.page-home .site-header { position: absolute; inset: 0 0 auto; background: transparent; color: #fff; }
+
+.mobile-nav { display: none; }
+.mobile-nav summary { display: grid; place-items: center; width: 44px; height: 44px; cursor: pointer; list-style: none; }
+.mobile-nav summary::-webkit-details-marker { display: none; }
+.burger, .burger::before, .burger::after { display: block; width: 22px; height: 2px; background: currentColor; }
+.burger { position: relative; }
+.burger::before, .burger::after { content: ""; position: absolute; left: 0; }
+.burger::before { top: -7px; }
+.burger::after { top: 7px; }
+.mobile-nav nav {
+  position: absolute;
+  inset: 100% 0 auto;
+  padding: 12px 20px 28px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 12px 24px rgb(0 0 0 / 0.12);
+}
+.mobile-nav ul { margin: 0; padding: 0; list-style: none; }
+.mobile-nav li { margin: 0; }
+.mobile-nav ul ul { padding-left: 18px; }
+.mobile-nav a {
+  display: block;
+  padding: 12px 0;
+  font: 600 13px/20px var(--sans);
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* Footer: the original is an empty black band */
+.site-footer { height: 158px; background: var(--black); }
+
+/* Buttons */
+.button {
+  display: inline-block;
+  padding: 13px 26px;
+  border: 2px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font: 600 11px/15px var(--sans);
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+.button:hover, .button:focus-visible { background: var(--ink); border-color: var(--ink); color: #fff; }
+.dark .button:hover, .dark .button:focus-visible { background: #fff; border-color: #fff; color: var(--ink); }
+.button-large { padding: 21px 38px; font-size: 14px; line-height: 18px; letter-spacing: 2.1px; }
+
+/* Home */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  padding-top: 90px; /* the header overlays the image; centre the text in what is left */
+  background: #1b1b1b url("/images/hero.jpg") center / cover no-repeat;
+  color: #fff;
+}
+.hero::before { content: ""; position: absolute; inset: 0; background: rgb(0 0 0 / 0.3); }
+.hero .wrap { position: relative; flex: 1; padding: 100px 0; }
+.hero-text { width: calc(70% - 10.2px); }
+.hero-text > :last-child { margin-bottom: 0; }
+
+.portrait { width: 100%; aspect-ratio: 613 / 727; object-fit: cover; object-position: center 30%; }
+
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 33.33px; margin: 0 0 17px; padding: 0; list-style: none; text-align: center; }
+.cards li { margin: 0; }
+.cards a { display: block; text-decoration: none; }
+.cards img { width: 100%; max-width: 500px; margin-inline: auto; aspect-ratio: 5 / 4; object-fit: cover; }
+.cards h3 { margin: 34px 0 0; }
+.cards a:hover h3, .cards a:focus-visible h3 { text-decoration: underline; }
+
+.faq { display: grid; grid-template-columns: repeat(2, calc(40% - 20.4px)); gap: var(--gap); align-items: start; padding: 34px 0 17px; }
+.faq .display { margin: 0; text-align: center; }
+.faq summary {
+  font: 900 15px/30px var(--sans);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::before { content: "+ "; }
+.faq details[open] summary::before { content: "– "; }
+.faq details p { margin-top: 15px; }
+
+/* Forms */
+.form { display: grid; gap: 13px; }
+.form fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.form legend { padding: 0; line-height: 20px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form label { display: block; line-height: 24px; }
+.form-name label { font-size: 12px; line-height: 20px; }
+.hint { font-size: 12px; opacity: 0.8; }
+.form input, .form textarea {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 10px;
+  border: 1px solid var(--field-border);
+  border-radius: 0;
+  background: var(--field);
+  color: #272727;
+  font: 300 15px/20px var(--sans);
+}
+.form-name input { margin-top: 0; }
+.form textarea { height: 100px; min-height: 100px; resize: vertical; }
+.form input:focus-visible, .form textarea:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.form-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form-actions { margin-top: 8px; text-align: center; }
+
+/* Inner pages */
+.figure { margin: 0 auto 34px; }
+.figure-narrow { width: calc(40% - 20.4px); }
+/* Four 25% columns; in the original each item only fills four-fifths of its column, set to the left. */
+.icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 99px var(--gap); margin: 0 0 60px; padding: 0; list-style: none; text-align: center; }
+.icon-grid li { width: calc(80% - 6.8px); margin: 0; }
+.icon-grid img { margin: 0 auto 34px; }
+.icon-grid p { margin: 0; }
+.icon-grid-text { margin-bottom: 45px; }
+.icon-grid-text li { width: auto; }
+
+.about-text { padding-top: 100px; }
+/* The gallery block bleeds half a gutter past its column on each side. */
+.photo-frame { display: grid; place-items: center; margin-inline: -17px; aspect-ratio: 539 / 502; background: #f6f6f6; overflow: hidden; }
+.photo-frame img { width: auto; height: 100%; max-width: none; }
+
+/* Text starts on the column line; each icon hangs in the margin to its left, as in the original. */
+.contact-details { display: grid; grid-template-columns: 41.8% 30.5% 1fr; margin: 22px 0 10px; padding: 0; list-style: none; }
+.contact-details li { position: relative; margin: 0; }
+.contact-details img { position: absolute; left: -83px; top: 10px; }
+.contact-details li + li img { left: -60px; }
+.contact-details h3 { margin: 12px 0; }
+.contact-details a { text-decoration: none; }
+.map { display: block; width: 100%; height: 442px; border: 0; }
+
+.notice { max-width: 640px; min-height: 100vh; margin: 0 auto; padding: 120px 20px; }
+
+/* Tablet and below: the original swaps the header for a 50px bar but keeps the desktop grid. */
+@media (max-width: 960px) {
+  .site-header, .page-home .site-header {
+    position: relative;
+    inset: auto;
+    height: 50px;
+    padding: 0 3px 0 10px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .site-title { font-size: 22px; line-height: 34px; letter-spacing: -0.2px; }
+  .site-nav { display: none; }
+  .mobile-nav { display: block; }
+  .hero { min-height: calc(100vh - 50px); padding-top: 0; }
+}
+
+/* Phone: single column, 10px gutters, smaller display type. */
+@media (max-width: 640px) {
+  .wrap { margin-inline: var(--edge); }
+  h1, .display { font-size: 32px; line-height: 37px; letter-spacing: -1px; margin-bottom: 24px; }
+  ul { padding-left: 28px; }
+  .content { padding: 71px 0 50px; }
+  .section { padding: 77px 0; }
+  .section-tight { padding-top: 0; }
+  .split, .faq { grid-template-columns: 1fr; }
+  .about-text { padding: 0; }
+  .hero-text, .figure-narrow { width: auto; }
+  .cards { grid-template-columns: 1fr; }
+  .faq { padding: 0; }
+  .icon-grid { grid-template-columns: repeat(2, 1fr); gap: 50px 17px; }
+  .icon-grid li { width: auto; }
+  .icon-grid img { margin-bottom: 16px; }
+  .photo-frame { margin-inline: 0; }
+  .contact-details { grid-template-columns: 1fr; }
+  .contact-details li, .contact-details li + li { padding-left: 44px; }
+  .contact-details img, .contact-details li + li img { left: 0; }
+  .map { height: 320px; }
+}

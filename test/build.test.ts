@@ -1,0 +1,91 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { buildSite, readBuiltSite } from '../src/build.ts';
+
+async function fixture(): Promise<string> {
+  const root = await mkdtemp(join(tmpdir(), 'sitekit-'));
+  await mkdir(join(root, 'content/pages'), { recursive: true });
+  await mkdir(join(root, 'content/partials'), { recursive: true });
+  await mkdir(join(root, 'public/images'), { recursive: true });
+  await writeFile(join(root, 'site.json'), JSON.stringify({
+    siteName: 'Test Practice',
+    origin: 'https://www.example.com',
+    nav: [{ label: 'Home', href: '/' }, { label: 'About', href: '/about' }],
+    pages: [
+      { path: '/', title: 'Home', file: 'home.html', description: 'Welcome.' },
+      { path: '/about', title: 'About', file: 'about.html', description: 'About us.' },
+    ],
+    redirects: { '/old': '/about' },
+  }));
+  await writeFile(join(root, 'content/pages/home.html'), '<h1>Hello</h1>{{> hours}}');
+  await writeFile(join(root, 'content/pages/about.html'), '<h1>About</h1><img src="/images/a.png" alt="">');
+  await writeFile(join(root, 'content/partials/hours.html'), '<p>Open weekdays</p>');
+  await writeFile(join(root, 'public/images/a.png'), 'png');
+  return root;
+}
+
+test('buildSite writes each page, the theme, the site files and the redirects into dist', async (t) => {
+  // Arrange
+  const root = await fixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  // Act
+  const summary = await buildSite({ root });
+
+  // Assert
+  const home = await readFile(join(root, 'dist/index.html'), 'utf8');
+  assert.match(home, /<title>Test Practice<\/title>/);
+  assert.match(home, /<h1>Hello<\/h1><p>Open weekdays<\/p>/);
+  assert.match(await readFile(join(root, 'dist/about.html'), 'utf8'), /<link rel="canonical" href="https:\/\/www\.example\.com\/about">/);
+  assert.equal(await readFile(join(root, 'dist/_redirects'), 'utf8'), '/old /about 301\n');
+  assert.match(await readFile(join(root, 'dist/robots.txt'), 'utf8'), /Sitemap: https:\/\/www\.example\.com\/sitemap\.xml/);
+  const files = await readdir(join(root, 'dist'));
+  for (const expected of ['styles.css', 'fonts', 'images', 'sitemap.xml']) assert.ok(files.includes(expected), expected);
+  assert.ok(!files.includes('_headers'));
+  assert.deepEqual(summary, { pages: 2, redirects: 1, preview: false });
+});
+
+test('buildSite marks a preview build as hidden from search engines', async (t) => {
+  // Arrange
+  const root = await fixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  // Act
+  await buildSite({ root, preview: true });
+
+  // Assert
+  assert.equal(await readFile(join(root, 'dist/robots.txt'), 'utf8'), 'User-agent: *\nDisallow: /\n');
+  assert.match(await readFile(join(root, 'dist/_headers'), 'utf8'), /X-Robots-Tag: noindex/);
+});
+
+test('buildSite replaces the previous build, so a deleted page does not linger', async (t) => {
+  // Arrange
+  const root = await fixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(join(root, 'dist'), { recursive: true });
+  await writeFile(join(root, 'dist/stale.html'), 'old');
+
+  // Act
+  await buildSite({ root });
+
+  // Assert
+  assert.ok(!(await readdir(join(root, 'dist'))).includes('stale.html'));
+});
+
+test('readBuiltSite lists every built file and returns the HTML of the pages', async (t) => {
+  // Arrange
+  const root = await fixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await buildSite({ root });
+
+  // Act
+  const built = await readBuiltSite(root);
+
+  // Assert
+  assert.ok(built.files.has('images/a.png'));
+  assert.ok(built.files.has('fonts/outfit.woff2'));
+  assert.deepEqual(Object.keys(built.html).sort(), ['about.html', 'index.html']);
+});
