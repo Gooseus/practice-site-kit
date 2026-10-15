@@ -1,4 +1,4 @@
-// Pure rendering helpers for the static site. No file or network access here; scripts/build.ts does the I/O.
+// Pure rendering helpers for the static site. No file or network access here; build.ts does the I/O.
 
 export type NavItem = { label: string; href: string; children?: NavItem[] };
 export type Page = { path: string; title: string; description: string; file: string; noindex?: boolean };
@@ -36,47 +36,26 @@ export function applyIncludes(body: string, partials: Record<string, string>): s
   });
 }
 
-export function renderPage(page: Page, body: string, site: Site): string {
+/**
+ * Fills a theme's layout.html. Placeholders are {{title}}, {{description}}, {{indexing}}, {{slug}}, {{siteName}},
+ * {{nav}} and {{body}}. The page body goes in last and is never scanned, so copy can contain braces.
+ */
+export function renderPage(page: Page, body: string, site: Site, layout: string): string {
   const isHome = page.path === '/';
   const title = isHome ? site.siteName : `${page.title} — ${site.siteName}`;
-  const slug = isHome ? 'home' : page.path.replace(/^\/+|\/+$/g, '').replace(/\//g, '-');
-  const indexing = page.noindex
-    ? '<meta name="robots" content="noindex">'
-    : `<link rel="canonical" href="${escapeHtml(site.origin + page.path)}">`;
-  const nav = renderNav(site.nav, page.path);
-
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(title)}</title>
-<meta name="description" content="${escapeHtml(page.description)}">
-${indexing}
-<meta property="og:title" content="${escapeHtml(title)}">
-<meta property="og:description" content="${escapeHtml(page.description)}">
-<meta property="og:type" content="website">
-<link rel="preload" href="/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/libre-bodoni.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/styles.css">
-</head>
-<body class="page-${slug}">
-<a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header">
-<a class="site-title" href="/">${escapeHtml(site.siteName)}</a>
-<nav class="site-nav" aria-label="Main">${nav}</nav>
-<details class="mobile-nav">
-<summary aria-label="Menu"><span class="burger"></span></summary>
-<nav aria-label="Main, mobile">${nav}</nav>
-</details>
-</header>
-<main id="main">
-${body}
-</main>
-<footer class="site-footer"></footer>
-</body>
-</html>
-`;
+  const values: Record<string, string> = {
+    title: escapeHtml(title),
+    description: escapeHtml(page.description),
+    indexing: page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${escapeHtml(site.origin + page.path)}">`,
+    slug: isHome ? 'home' : page.path.replace(/^\/+|\/+$/g, '').replace(/\//g, '-'),
+    siteName: escapeHtml(site.siteName),
+    nav: renderNav(site.nav, page.path),
+    body,
+  };
+  return layout.replace(/\{\{(\w+)\}\}/g, (_, name: string) => {
+    if (!(name in values)) throw new Error(`Unknown layout placeholder: ${name}`);
+    return values[name];
+  });
 }
 
 export function renderRedirects(redirects: Record<string, string>): string {

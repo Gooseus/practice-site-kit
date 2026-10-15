@@ -5,6 +5,7 @@ import { parseSiteConfig } from '../src/config.ts';
 const valid = () => ({
   siteName: 'Mary Rower, RN, LCSW',
   origin: 'https://www.maryrower.com',
+  theme: 'sea-girt',
   facts: { phone: '(732) 359-7676' },
   nav: [
     { label: 'Home', href: '/' },
@@ -74,4 +75,17 @@ test('parseSiteConfig rejects something that is not a settings object', () => {
 
   // Assert
   for (const act of acts) assert.throws(act, /site\.json must be an object/);
+});
+
+test('parseSiteConfig requires a theme name made of lowercase letters, digits and dashes', () => {
+  // Arrange
+  const missing = { ...valid(), theme: undefined };
+  const odd = { ...valid(), theme: '../Sea Girt' };
+
+  // Act
+  const fail = (input: unknown) => () => parseSiteConfig(input);
+
+  // Assert
+  assert.throws(fail(missing), /theme must be a theme name like "sea-girt"/);
+  assert.throws(fail(odd), /theme must be a theme name like "sea-girt"/);
 });

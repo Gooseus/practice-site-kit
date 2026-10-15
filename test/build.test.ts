@@ -13,6 +13,7 @@ async function fixture(): Promise<string> {
   await writeFile(join(root, 'site.json'), JSON.stringify({
     siteName: 'Test Practice',
     origin: 'https://www.example.com',
+    theme: 'sea-girt',
     nav: [{ label: 'Home', href: '/' }, { label: 'About', href: '/about' }],
     pages: [
       { path: '/', title: 'Home', file: 'home.html', description: 'Welcome.' },
@@ -44,6 +45,7 @@ test('buildSite writes each page, the theme, the site files and the redirects in
   assert.match(await readFile(join(root, 'dist/robots.txt'), 'utf8'), /Sitemap: https:\/\/www\.example\.com\/sitemap\.xml/);
   const files = await readdir(join(root, 'dist'));
   for (const expected of ['styles.css', 'fonts', 'images', 'sitemap.xml']) assert.ok(files.includes(expected), expected);
+  assert.ok(!files.includes('layout.html'), 'the layout is a template, not a page');
   assert.ok(!files.includes('_headers'));
   assert.deepEqual(summary, { pages: 2, redirects: 1, preview: false });
 });
@@ -88,4 +90,38 @@ test('readBuiltSite lists every built file and returns the HTML of the pages', a
   assert.ok(built.files.has('images/a.png'));
   assert.ok(built.files.has('fonts/outfit.woff2'));
   assert.deepEqual(Object.keys(built.html).sort(), ['about.html', 'index.html']);
+});
+
+test('buildSite names the available themes when site.json asks for one that does not exist', async (t) => {
+  // Arrange
+  const root = await fixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const config = JSON.parse(await readFile(join(root, 'site.json'), 'utf8'));
+  await writeFile(join(root, 'site.json'), JSON.stringify({ ...config, theme: 'no-such-theme' }));
+
+  // Act
+  const build = buildSite({ root });
+
+  // Assert
+  await assert.rejects(build, /There is no theme called "no-such-theme". Themes: .*sea-girt/);
+});
+
+test('buildSite lets a theme layout include the site\'s own partials', async (t) => {
+  // Arrange
+  const root = await fixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const themes = join(root, 'themes');
+  await mkdir(join(themes, 'plain'), { recursive: true });
+  await writeFile(join(themes, 'plain/layout.html'), '<main>{{body}}</main><footer>{{> footer}}</footer>');
+  await writeFile(join(themes, 'plain/plain.css'), 'body{}');
+  await writeFile(join(root, 'content/partials/footer.html'), '<p>1105 Wilson Street</p>');
+  const config = JSON.parse(await readFile(join(root, 'site.json'), 'utf8'));
+  await writeFile(join(root, 'site.json'), JSON.stringify({ ...config, theme: 'plain' }));
+
+  // Act
+  await buildSite({ root, themes });
+
+  // Assert
+  assert.equal(await readFile(join(root, 'dist/about.html'), 'utf8'), '<main><h1>About</h1><img src="/images/a.png" alt=""></main><footer><p>1105 Wilson Street</p></footer>');
+  assert.ok((await readdir(join(root, 'dist'))).includes('plain.css'));
 });

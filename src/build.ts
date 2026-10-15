@@ -1,10 +1,11 @@
-// Builds a site repo into dist/: the kit's theme, the site's own public files, and one HTML file per page.
+// Builds a site repo into dist/: the chosen theme's files, the site's own public files, and one HTML file per page.
+// A theme is a folder in themes/ with a layout.html (see renderPage) and whatever stylesheets and fonts it needs.
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parseSiteConfig, type SiteConfig } from './config.ts';
 import { applyIncludes, outputPath, renderHeaders, renderPage, renderRedirects, renderRobots, renderSitemap } from './render.ts';
 
-const THEME = new URL('../theme/', import.meta.url);
+const THEMES = new URL('../themes/', import.meta.url).pathname;
 
 export async function loadConfig(root: string): Promise<SiteConfig> {
   let raw: unknown;
@@ -16,24 +17,32 @@ export async function loadConfig(root: string): Promise<SiteConfig> {
   return parseSiteConfig(raw);
 }
 
-/** `preview` builds the copy for a temporary address: same pages, hidden from search engines. */
-export async function buildSite({ root, preview = false }: { root: string; preview?: boolean }) {
+async function findTheme(themes: string, name: string): Promise<string> {
+  const available = (await readdir(themes, { withFileTypes: true })).filter((e) => e.isDirectory()).map((e) => e.name);
+  if (!available.includes(name)) throw new Error(`There is no theme called "${name}". Themes: ${available.sort().join(', ')}`);
+  return join(themes, name);
+}
+
+/** `preview` builds the copy for a temporary address: same pages, hidden from search engines. `themes` is for tests. */
+export async function buildSite({ root, preview = false, themes = THEMES }: { root: string; preview?: boolean; themes?: string }) {
   const config = await loadConfig(root);
+  const theme = await findTheme(themes, config.theme);
   const dist = join(root, 'dist');
   await rm(dist, { recursive: true, force: true });
   await mkdir(dist, { recursive: true });
-  await cp(THEME, dist, { recursive: true });
+  await cp(theme, dist, { recursive: true, filter: (src) => src !== join(theme, 'layout.html') });
   await cp(join(root, 'public'), dist, { recursive: true });
 
   const partials: Record<string, string> = {};
   for (const file of await readdir(join(root, 'content/partials')).catch(() => [])) {
     partials[file.replace(/\.html$/, '')] = await readFile(join(root, 'content/partials', file), 'utf8');
   }
+  const layout = applyIncludes(await readFile(join(theme, 'layout.html'), 'utf8'), partials);
   for (const page of config.pages) {
     const body = applyIncludes(await readFile(join(root, 'content/pages', page.file), 'utf8'), partials);
     const out = join(dist, outputPath(page.path));
     await mkdir(join(out, '..'), { recursive: true });
-    await writeFile(out, renderPage(page, body, config));
+    await writeFile(out, renderPage(page, body, config, layout));
   }
 
   await writeFile(join(dist, '_redirects'), renderRedirects(config.redirects));

@@ -8,12 +8,13 @@ export function classifyChanges(paths: string[], editable: string[] = EDITABLE):
   return { allowed: paths.filter(ok), blocked: paths.filter((p) => !ok(p)) };
 }
 
-type Protected = { origin?: string; facts?: Record<string, string> };
+type Protected = { origin?: string; theme?: string; facts?: Record<string, string> };
 
-/** Changes to the web address or to a protected fact. These are allowed only when someone asked for them. */
+/** Changes to the web address, the theme or a protected fact. These are allowed only when someone asked for them. */
 export function changedProtected(before: Protected, after: Protected): string[] {
   const changes: string[] = [];
   if (before.origin !== after.origin) changes.push(`web address: ${before.origin ?? '(none)'} → ${after.origin ?? '(removed)'}`);
+  if (before.theme !== after.theme) changes.push(`theme: ${before.theme ?? '(none)'} → ${after.theme ?? '(removed)'}`);
   const was = before.facts ?? {};
   const now = after.facts ?? {};
   for (const key of new Set([...Object.keys(was), ...Object.keys(now)])) {

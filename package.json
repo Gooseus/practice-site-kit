@@ -9,7 +9,7 @@
   },
   "files": [
     "dist",
-    "theme",
+    "themes",
     "rules.md"
   ],
   "scripts": {

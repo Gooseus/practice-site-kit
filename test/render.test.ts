@@ -8,6 +8,7 @@ const NAV: NavItem[] = [
   { label: 'About', href: '/about' },
 ];
 const PAGE: Page = { path: '/about', title: 'About', description: 'Mary "the nurse" & therapist', file: 'about.html' };
+const LAYOUT = '<title>{{title}}</title><meta name="description" content="{{description}}">{{indexing}}<body class="page-{{slug}}"><a>{{siteName}}</a><nav>{{nav}}</nav><main>{{body}}</main></body>';
 
 test('escapeHtml escapes the five HTML-significant characters', () => {
   // Arrange
@@ -49,7 +50,7 @@ test('renderPage sets the title, escaped description, canonical URL and body cla
   const body = '<h1>About</h1>';
 
   // Act
-  const html = renderPage(PAGE, body, { siteName: 'Mary Rower, RN, LCSW', origin: 'https://www.maryrower.com', nav: NAV });
+  const html = renderPage(PAGE, body, { siteName: 'Mary Rower, RN, LCSW', origin: 'https://www.maryrower.com', nav: NAV }, LAYOUT);
 
   // Assert
   assert.match(html, /<title>About — Mary Rower, RN, LCSW<\/title>/);
@@ -64,7 +65,7 @@ test('renderPage uses the bare site name as the home title and a root canonical'
   const home: Page = { path: '/', title: 'Couples Consultation Group', description: 'd', file: 'home.html' };
 
   // Act
-  const html = renderPage(home, '', { siteName: 'Mary Rower, RN, LCSW', origin: 'https://www.maryrower.com', nav: NAV });
+  const html = renderPage(home, '', { siteName: 'Mary Rower, RN, LCSW', origin: 'https://www.maryrower.com', nav: NAV }, LAYOUT);
 
   // Assert
   assert.match(html, /<title>Mary Rower, RN, LCSW<\/title>/);
@@ -77,7 +78,7 @@ test('renderPage marks noindex pages and leaves them without a canonical link', 
   const thanks: Page = { path: '/thank-you', title: 'Thank you', description: 'd', file: 'thank-you.html', noindex: true };
 
   // Act
-  const html = renderPage(thanks, '', { siteName: 'S', origin: 'https://www.maryrower.com', nav: NAV });
+  const html = renderPage(thanks, '', { siteName: 'S', origin: 'https://www.maryrower.com', nav: NAV }, LAYOUT);
 
   // Assert
   assert.match(html, /<meta name="robots" content="noindex">/);
@@ -152,4 +153,26 @@ test('renderHeaders adds a noindex header to every path on a preview build only'
   // Assert
   assert.equal(preview, '/*\n  X-Robots-Tag: noindex, nofollow\n');
   assert.equal(production, '');
+});
+
+test('renderPage fills the theme layout and leaves the page body untouched', () => {
+  // Arrange
+  const body = '<p>Literal {{title}} in the copy</p>';
+
+  // Act
+  const html = renderPage(PAGE, body, { siteName: 'A & B', origin: 'https://www.example.com', nav: [] }, '<header>{{siteName}}</header>{{nav}}{{body}}');
+
+  // Assert
+  assert.equal(html, '<header>A &amp; B</header><ul></ul><p>Literal {{title}} in the copy</p>');
+});
+
+test('renderPage rejects a layout placeholder it does not know', () => {
+  // Arrange
+  const layout = '<h1>{{tagline}}</h1>{{body}}';
+
+  // Act
+  const render = () => renderPage(PAGE, '', { siteName: 'S', origin: 'https://www.example.com', nav: [] }, layout);
+
+  // Assert
+  assert.throws(render, /Unknown layout placeholder: tagline/);
 });

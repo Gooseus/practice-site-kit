@@ -1,10 +1,11 @@
-// The site's settings file, site.json: name, web address, menu, page list, old-address redirects,
+// The site's settings file, site.json: name, web address, theme, menu, page list, old-address redirects,
 // and the facts that must never change by accident.
 import type { NavItem, Page } from './render.ts';
 
 export type SiteConfig = {
   siteName: string;
   origin: string;
+  theme: string;
   facts: Record<string, string>;
   nav: NavItem[];
   pages: Page[];
@@ -18,7 +19,7 @@ const isText = (v: unknown): v is string => typeof v === 'string' && v.trim() !=
 export function parseSiteConfig(input: unknown): SiteConfig {
   if (!isObject(input)) throw new Error('site.json must be an object');
   const problems: string[] = [];
-  const { siteName, origin } = input;
+  const { siteName, origin, theme } = input;
   const facts = isObject(input.facts) ? input.facts : {};
   const nav: NavItem[] = Array.isArray(input.nav) ? input.nav : [];
   const pages: Page[] = Array.isArray(input.pages) ? input.pages : [];
@@ -26,6 +27,7 @@ export function parseSiteConfig(input: unknown): SiteConfig {
 
   if (!isText(siteName)) problems.push('siteName is missing');
   if (!isText(origin) || !/^https:\/\/[a-z0-9.-]+$/i.test(origin)) problems.push('origin must look like https://www.example.com (no trailing slash)');
+  if (!isText(theme) || !/^[a-z0-9-]+$/.test(theme)) problems.push('theme must be a theme name like "sea-girt"');
   if (pages.length === 0) problems.push('pages is empty');
 
   const paths = new Set<string>();
@@ -51,5 +53,5 @@ export function parseSiteConfig(input: unknown): SiteConfig {
   for (const [key, value] of Object.entries(facts)) if (!isText(value)) problems.push(`fact "${key}" is empty`);
 
   if (problems.length) throw new Error(`site.json has ${problems.length === 1 ? 'a problem' : 'problems'}:\n- ${problems.join('\n- ')}`);
-  return { ...input, siteName, origin, facts, nav, pages, redirects } as SiteConfig;
+  return { ...input, siteName, origin, theme, facts, nav, pages, redirects } as SiteConfig;
 }

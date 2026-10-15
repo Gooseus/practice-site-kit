@@ -42,3 +42,15 @@ test('changedProtected is empty when only unprotected settings changed', () => {
   // Assert
   assert.deepEqual(changes, []);
 });
+
+test('changedProtected treats a theme switch as protected', () => {
+  // Arrange
+  const before = { origin: 'https://www.example.com', theme: 'sea-girt', facts: {} };
+  const after = { origin: 'https://www.example.com', theme: 'hood-river', facts: {} };
+
+  // Act
+  const changes = changedProtected(before, after);
+
+  // Assert
+  assert.deepEqual(changes, ['theme: sea-girt → hood-river']);
+});
