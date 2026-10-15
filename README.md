@@ -11,7 +11,7 @@ photos and settings, and depends on a version of this kit.
 | `src/checks.ts` | Broken links, images without alt text, protected facts still on the site |
 | `src/guard.ts` | Blocks changes outside `content/`, `public/images/` and `site.json`; flags changed facts |
 | `src/cli.ts` | `sitekit build [--preview]`, `sitekit check`, `sitekit guard [--base <ref>] [--allow-protected]` |
-| `themes/<name>/` | One folder per look: `layout.html` (the page frame around each page) plus its stylesheet and fonts. `site.json` picks one with `"theme"`. `sea-girt` is Mary's. |
+| `themes/<name>/` | One folder per look: `layout.html` (the page frame around each page) plus its stylesheet and fonts. `site.json` picks one with `"theme"`. `sea-girt` is Mary's; `hood-river` is Amy's and expects the site to supply its logo as `content/partials/logo.html`. |
 | `rules.md` | Instructions for the AI working in a site repo. Each site's `CLAUDE.md` imports it. |
 
 ```
@@ -38,7 +38,7 @@ CLAUDE.md         site-specific notes, then @node_modules/practice-site-kit/rule
 - **Pipeline.** Sites deploy by hand with wrangler. The plan is GitHub plus Cloudflare builds: a branch gets a
   preview, merging publishes, and `sitekit guard --base origin/main` runs there. Until then the guard is advisory:
   the permission settings in a site repo stop honest mistakes, not a determined agent.
-- **Themes.** There is one, lifted from maryrower.com (a Squarespace 7.0 template). A second site will show what
-  has to become a setting.
+- **Themes.** Two, each lifted from a Squarespace 7.0 site (maryrower.com, downtoearthchiropractic.com). Both are
+  hand-measured copies; nothing is a setting yet. Colours, fonts and spacing are the obvious first candidates.
 - **Skill pack, new-site template, site importers.** The Squarespace and WordPress scrapers live in the site repos for now.
 - **Image resizing.** Photos are prepared by hand.

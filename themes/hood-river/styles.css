@@ -1,0 +1,373 @@
+/* Rebuilt from the Squarespace 7.0 "Brine" site at downtoearthchiropractic.com (measured at 390, 768 and 1400px).
+   Brine sets a page edge (--pad) of 100px that steps down to 64, 48, 36 and 20px; every block has 17px of padding,
+   so neighbouring blocks sit 34px apart. Full-width text is inset a further 1.7% from the edge.
+   Jost stands in for both Adobe faces the original used: Futura PT (body, menu, buttons) and Hypatia Sans
+   (headings, quotes). Jost is SIL Open Font License and self-hosted; see fonts/jost-OFL.txt. */
+
+@font-face {
+  font-family: "Jost";
+  src: url("/fonts/jost.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Jost";
+  src: url("/fonts/jost-italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --ink: #494752;
+  --teal: #538488;
+  --purple: #776f95;
+  --navy: #091353;
+  --navy-line: #222e77;
+  --aqua: #008893;
+  --header: #fafafa;
+  --paper: #fff;
+  --sans: "Jost", "Futura PT", Futura, "Century Gothic", sans-serif;
+  --pad: 100px;
+  --inset: calc(1.7% + 0.58px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--teal);
+  color: var(--ink);
+  font: 500 20px/39.9px var(--sans);
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; height: auto; }
+main { background: var(--paper); }
+a { color: var(--purple); text-decoration: none; padding-bottom: 0.05em; border-bottom: 1px solid rgb(119 111 149 / 0.3); }
+a:hover { color: rgb(119 111 149 / 0.6); }
+
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus { left: 10px; top: 10px; z-index: 100; padding: 8px 12px; background: var(--paper); color: var(--ink); }
+
+/* Type. Jost sets about 10% wider than Futura PT and Hypatia Sans at the same size. Sizes and tracking here were
+   fitted so a line of Jost is as long as the same line on the old site, which keeps its line breaks. */
+h1 {
+  margin: 0;
+  color: var(--teal);
+  font: 600 72px/67.5px var(--sans);
+  letter-spacing: -3.85px;
+}
+h1 a { color: inherit; border-bottom-color: rgb(83 132 136 / 0.3); padding-bottom: 0.05em; }
+h2 {
+  margin: 28.22px 0;
+  color: var(--teal);
+  font: 400 34px/40.8px var(--sans);
+  letter-spacing: -0.85px;
+}
+h3 {
+  margin: 22px 0;
+  color: var(--teal);
+  font: 500 20px/33px var(--sans);
+  letter-spacing: 4.84px;
+  text-transform: uppercase;
+}
+p { margin: 21px 0; }
+ul { margin: 21px 0; padding-left: 40px; }
+li { margin: 10.5px 0; }
+li > p { margin: 0; }
+strong { font-weight: 700; }
+hr { height: 1px; margin: 10.5px 0; border: 0; background: var(--purple); }
+.center { text-align: center; }
+.center ul { list-style-position: inside; padding-left: 0; }
+.center li > p { display: inline; }
+
+/* Page areas. A banner is a photo with words on it; a section is a plain band; content is a normal page body. */
+.banner { position: relative; overflow: hidden; background: #616161; color: #fff; }
+.banner-image { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }
+.banner .blocks { position: relative; padding: 240px var(--pad); }
+.banner-intro .blocks { padding: 108px var(--pad); }
+/* The old full-height banners had a thin line at the bottom that pointed down the page. */
+.banner:not(.banner-intro)::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 1px; height: 45px; background: #fff; }
+.banner h1, .banner h2, .banner h3 { color: #fff; }
+.section .blocks { padding: 39px var(--pad); }
+.content .blocks { padding: 120px var(--pad); }
+
+/* Blocks: each child of .blocks is one block, 34px from the next. */
+.blocks { max-width: 1920px; margin-inline: auto; }
+.blocks > * { margin: 0 var(--inset); }
+.blocks > * + * { margin-top: 34px; }
+.blocks > hr, .cols > div > hr { margin-block: 44.5px; }
+.blocks > hr + *, .cols > div > hr + * { margin-top: 0; }
+/* The last block keeps its 17px bottom padding, unless it is the only block. */
+.blocks > :last-child:not(:only-child) { margin-bottom: 17px; }
+.blocks > hr:last-child:not(:only-child) { margin-bottom: 27.5px; }
+.blocks > .cols { margin-inline: -17px; }
+.blocks > .wide { margin-inline: 0; }
+.text > :first-child { margin-top: 0; }
+.text > :last-child { margin-bottom: 0; }
+.spacer { height: 34px; }
+.spacer-none { display: flow-root; height: 0; } /* flow-root stops its margins collapsing through it */
+
+/* Columns. Each column is a stack of blocks with 17px padding at the sides. */
+.cols { display: grid; align-items: start; }
+.cols > div { min-width: 0; padding-inline: 17px; }
+/* A column is either a stack of blocks or, with class="text", a single text block. */
+.cols > div:not(.text) > * { margin: 0; }
+.cols > div:not(.text) > * + * { margin-top: 34px; }
+.cols-2 { grid-template-columns: 1fr 1fr; }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.cols-4-8 { grid-template-columns: 4fr 8fr; }
+.cols-3-9 { grid-template-columns: 3fr 9fr; }
+.cols-3-7-2 { grid-template-columns: 3fr 7fr 2fr; }
+.cols-2-10 { grid-template-columns: 2fr 10fr; }
+
+/* Buttons. Small and medium are square outlines; large is a solid pill. */
+.button-row { text-align: center; line-height: 0; }
+.button {
+  display: inline-block;
+  border: 2px solid currentColor;
+  color: var(--aqua);
+  font: 700 12.5px/16.8px var(--sans);
+  letter-spacing: 3.92px;
+  text-transform: uppercase;
+  padding: 21px 34px;
+  transition: opacity 0.15s ease-out;
+}
+.button:hover, .button:focus-visible { color: var(--aqua); opacity: 0.8; }
+.button-small { padding: 13px 26px; font-size: 10px; line-height: 14px; letter-spacing: 2.2px; }
+.button-large {
+  padding: 25px 46px;
+  border: 0;
+  border-radius: 300px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 16px;
+  line-height: 21.6px;
+  letter-spacing: 3.6px;
+}
+.button-large:hover, .button-large:focus-visible { color: #fff; }
+.banner .button-small, .banner .button-small:hover, .site-footer .button-small, .site-footer .button-small:hover { color: #fff; }
+.banner .button-medium, .banner .button-medium:hover { color: var(--navy-line); }
+
+/* Quotes */
+/* The old quote block had 23px above the quote and below its caption, inside the usual block spacing. */
+.quote { padding: 23px 0; text-align: center; }
+.cols .quote { padding-bottom: 40.5px; }
+.quote blockquote { margin: 0; font: 200 22px/27.6px var(--sans); letter-spacing: -0.15px; }
+.quote figcaption { padding-top: 5.5px; font: 700 10px/72.71px var(--sans); letter-spacing: 6.05px; text-transform: uppercase; }
+
+/* Images. The old site masked some photos and icons with a rounded square. */
+figure { margin: 0; }
+/* As on the old site, a photo never grows past its own size; a smaller one sits in the middle of its space. */
+figure img { width: auto; margin-inline: auto; }
+.squircle {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0.5,0 C0.768,0,0.894,0.056,0.919,0.081 C0.944,0.106,1,0.242,1,0.505 C1,0.768,0.947,0.891,0.919,0.919 C0.891,0.947,0.768,1,0.5,1 C0.202,1,0.11,0.948,0.081,0.919 C0.052,0.89,0,0.768,0,0.5 C0,0.232,0.053,0.109,0.081,0.081 C0.109,0.053,0.232,0,0.5,0'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M0.5,0 C0.768,0,0.894,0.056,0.919,0.081 C0.944,0.106,1,0.242,1,0.505 C1,0.768,0.947,0.891,0.919,0.919 C0.891,0.947,0.768,1,0.5,1 C0.202,1,0.11,0.948,0.081,0.919 C0.052,0.89,0,0.768,0,0.5 C0,0.232,0.053,0.109,0.081,0.081 C0.109,0.053,0.232,0,0.5,0'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+.figure-caption-gap { padding-bottom: 18px; }
+/* A photo that the text wraps around, half the width of the page. */
+.float-left, .float-right { width: calc(51.76% - 16.4px); margin-bottom: 17px; }
+.float-left { float: left; margin-left: calc(-1.76% - 0.6px); margin-right: 34px; }
+.float-right { float: right; margin-right: calc(-1.76% - 0.6px); margin-left: 34px; }
+.clear::after { content: ""; display: table; clear: both; }
+
+/* Home: the three service icons */
+.icon-link { display: block; max-width: 300px; margin-inline: auto; padding: 0; border: 0; }
+.icon-card h3 { text-align: center; }
+
+/* Services: photo cards with the words over the photo */
+.card { position: relative; display: block; padding: 0; border: 0; color: #fff; }
+.card:hover { color: #fff; }
+.card img { width: 100%; }
+.card-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 10%;
+  text-align: center;
+  letter-spacing: 0;
+}
+.card-title { display: block; margin: 0 0 24px; font: 400 18.5px/20.37px var(--sans); }
+.card-text > span:not(.card-title) { display: block; font: 400 11px/14.4px var(--sans); }
+
+/* New patients: questions that open and close */
+.accordion { border-top: 1px solid #000; }
+.accordion details { border-bottom: 1px solid #000; }
+.accordion summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 30px 0;
+  color: var(--teal);
+  font: 500 20px/33px var(--sans);
+  letter-spacing: 4.84px;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+}
+.accordion summary::-webkit-details-marker { display: none; }
+.accordion summary::after {
+  content: "";
+  flex: none;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(#000, #000) center / 14px 1px no-repeat, linear-gradient(#000, #000) center / 1px 14px no-repeat;
+}
+.accordion details[open] summary::after { background: linear-gradient(#000, #000) center / 14px 1px no-repeat; }
+.accordion .answer { padding-bottom: 30px; }
+.accordion .answer > :first-child { margin-top: 0; }
+.accordion .answer > :last-child { margin-bottom: 0; }
+
+/* Contact */
+.map { display: block; width: 100%; aspect-ratio: 1000 / 501.2; border: 0; }
+
+/* Schedule: the IntakeQ booking widget sets its own width */
+.booking { min-height: 400px; }
+
+.notice { min-height: 50vh; }
+
+/* Header */
+.site-header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 calc(var(--pad) - 16.5px);
+  background: var(--header);
+}
+.site-logo { flex: 0 1 auto; min-width: 0; padding: 24px 16.5px; border: 0; }
+.site-logo img { width: auto; max-height: 224px; }
+.site-nav { flex: 0 1 auto; margin-right: 33px; padding: 24px 16.5px; text-align: right; }
+.site-nav ul { margin: 0; padding: 0; list-style: none; }
+.site-nav li, .mobile-nav li { margin: 0; }
+/* Wrapped menu lines sit 44.72px apart, but a single line only takes 20px of height, as in the original. */
+.site-nav > ul { margin: -12.36px 0; line-height: 44.72px; }
+.site-nav > ul > li { position: relative; display: inline-block; margin: 0 0 0 14px; }
+.site-nav > ul > li:first-child { margin-left: 0; }
+.site-nav a {
+  display: inline;
+  padding: 12.36px 0;
+  border: 0;
+  color: var(--teal);
+  font: 600 18px/20px var(--sans);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+.site-nav a:hover, .site-nav a:focus-visible, .site-nav a[aria-current], .site-nav .has-menu:has([aria-current]) > a { color: var(--purple); }
+.site-nav .has-menu ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: -20px;
+  width: 445px;
+  padding: 20px;
+  background: var(--teal);
+  line-height: 20px;
+  text-align: left;
+}
+.site-nav .has-menu:hover ul, .site-nav .has-menu:focus-within ul { display: block; }
+.site-nav .has-menu li a { display: block; padding: 7.64px 0; color: #f2f2f2; }
+.site-nav .has-menu li a:hover, .site-nav .has-menu li a[aria-current] { color: #fff; opacity: 0.7; }
+
+.mobile-nav { display: none; }
+.mobile-nav summary { display: grid; place-items: center; width: 40px; height: 34px; cursor: pointer; list-style: none; color: var(--teal); }
+.mobile-nav summary::-webkit-details-marker { display: none; }
+.burger, .burger::before, .burger::after { display: block; width: 22px; height: 2px; background: currentColor; }
+.burger { position: relative; }
+.burger::before, .burger::after { content: ""; position: absolute; left: 0; }
+.burger::before { top: -7px; }
+.burger::after { top: 7px; }
+.mobile-nav[open] summary {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 41;
+  width: 60px;
+  height: 60px;
+  background: #00041f;
+  color: #fff;
+}
+.mobile-nav[open] .burger { background: transparent; }
+.mobile-nav[open] .burger::before { top: 0; transform: rotate(45deg); }
+.mobile-nav[open] .burger::after { top: 0; transform: rotate(-45deg); }
+.mobile-nav nav {
+  position: fixed;
+  inset: 0 60px 0 0;
+  z-index: 40;
+  overflow-y: auto;
+  padding: 36px;
+  background: var(--paper);
+  box-shadow: 0 0 0 100vmax var(--teal);
+  text-align: left;
+}
+.mobile-nav ul { margin: 0; padding: 0; list-style: none; }
+.mobile-nav ul ul { padding-left: 18px; }
+.mobile-nav a {
+  display: block;
+  padding: 0 0 9.89px;
+  border: 0;
+  color: var(--teal);
+  font: 700 14.2px/19.2px var(--sans);
+  letter-spacing: 3.2px;
+  text-transform: uppercase;
+}
+.mobile-nav a[aria-current] { color: var(--purple); }
+
+/* Footer */
+.site-footer {
+  padding: 64px var(--pad);
+  background: var(--teal);
+  color: rgb(255 255 255 / 0.72);
+  text-align: center;
+}
+.site-footer p { margin: 0; }
+.site-footer .footer-address { margin-top: 40px; padding-bottom: 20px; }
+.site-footer a:not(.button) { color: #fff; border-bottom-color: rgb(255 255 255 / 0.3); }
+.site-footer a:not(.button):hover { color: rgb(255 255 255 / 0.6); }
+
+/* Brine's page edge steps down with the window width. */
+@media (max-width: 1280px) {
+  .banner .blocks { padding-block: 180px; }
+  .banner-intro .blocks { padding-block: 108px; }
+}
+@media (max-width: 1024px) { :root { --pad: 64px; } }
+@media (max-width: 960px) {
+  :root { --pad: 48px; }
+  .banner .blocks { padding-block: 120px; }
+  .banner-intro .blocks { padding-block: 108px; }
+  .site-footer { padding-block: 48px; }
+}
+@media (max-width: 768px) {
+  :root { --pad: 36px; }
+  .site-footer { padding-block: 36px; }
+}
+
+/* Phone: the header becomes a slim bar with the menu button, and columns stack. */
+@media (max-width: 640px) {
+  :root { --pad: 20px; --inset: 0px; }
+  .site-header { position: sticky; top: 0; justify-content: center; height: 74px; padding: 8px 12px; background: var(--paper); }
+  .site-logo { padding: 8px; }
+  .site-logo img { max-height: 42px; }
+  .site-nav { display: none; }
+  .mobile-nav { display: block; position: absolute; left: 12px; top: 20px; }
+  h1 { font-size: 31px; line-height: 28.8px; letter-spacing: -0.5px; }
+  h2 { font-size: 28px; line-height: 33.6px; letter-spacing: -0.7px; }
+  .banner .blocks, .banner-intro .blocks { padding-block: 60px; }
+  .content .blocks { padding-block: 60px; }
+  /* On phones every block keeps its 17px padding, the first and last included. */
+  .blocks > :first-child { margin-top: 17px; }
+  .blocks > :last-child, .blocks > :last-child:not(:only-child) { margin-bottom: 17px; }
+  .blocks > hr:last-child, .blocks > hr:last-child:not(:only-child) { margin-bottom: 27.5px; }
+  .cols { grid-template-columns: 1fr; }
+  .cols > div + div { margin-top: 34px; }
+  .float-left, .float-right { float: none; width: auto; margin: 0 0 34px; }
+  .button-large { padding: 21px 34px; font-size: 13.4px; line-height: 18px; letter-spacing: 3px; }
+  .site-footer { padding-block: 37px 20px; }
+  .site-footer .footer-address { margin-top: 74px; padding-bottom: 37px; }
+}

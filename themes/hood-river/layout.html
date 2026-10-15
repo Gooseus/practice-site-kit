@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+{{indexing}}
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:type" content="website">
+<link rel="preload" href="/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body class="page-{{slug}}">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+<a class="site-logo" href="/">{{> logo}}</a>
+<nav class="site-nav" aria-label="Main">{{nav}}</nav>
+<details class="mobile-nav">
+<summary aria-label="Menu"><span class="burger"></span></summary>
+<nav aria-label="Main, mobile">{{nav}}</nav>
+</details>
+</header>
+<main id="main">
+{{body}}
+</main>
+<footer class="site-footer">
+{{> footer}}
+</footer>
+</body>
+</html>
