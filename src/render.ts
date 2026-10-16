@@ -1,7 +1,9 @@
 // Pure rendering helpers for the static site. No file or network access here; build.ts does the I/O.
 
-export type NavItem = { label: string; href: string; children?: NavItem[] };
-export type Page = { path: string; title: string; description: string; file: string; noindex?: boolean };
+/** A menu entry. A folder (an item with children) may leave out `href`; it then opens its menu but goes nowhere. */
+export type NavItem = { label: string; href?: string; children?: NavItem[] };
+/** `description` may be left out when the old site had none; layouts that want one use {{descriptionTag}}. */
+export type Page = { path: string; title: string; description?: string; file: string; noindex?: boolean };
 export type Site = { siteName: string; origin: string; nav: NavItem[] };
 
 const ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -10,13 +12,19 @@ export function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (c) => ESCAPES[c]);
 }
 
-/** Flat .html files, so Cloudflare serves /about without a trailing slash, matching the old URLs. */
+/**
+ * The built file for a page path. `/about` becomes a flat about.html and `/about/` becomes about/index.html, so
+ * Cloudflare's auto-trailing-slash serves each at exactly the address the old site used.
+ */
 export function outputPath(path: string): string {
-  return path === '/' ? 'index.html' : `${path.replace(/^\/+|\/+$/g, '')}.html`;
+  const trimmed = path.replace(/^\/+|\/+$/g, '');
+  if (trimmed === '') return 'index.html';
+  return path.endsWith('/') ? `${trimmed}/index.html` : `${trimmed}.html`;
 }
 
 export function renderNav(nav: NavItem[], currentPath: string): string {
   const link = (item: NavItem, isFolder: boolean) => {
+    if (item.href === undefined) return `<a>${escapeHtml(item.label)}</a>`;
     const current = !isFolder && item.href === currentPath ? ' aria-current="page"' : '';
     return `<a href="${escapeHtml(item.href)}"${current}>${escapeHtml(item.label)}</a>`;
   };
@@ -37,15 +45,17 @@ export function applyIncludes(body: string, partials: Record<string, string>): s
 }
 
 /**
- * Fills a theme's layout.html. Placeholders are {{title}}, {{description}}, {{indexing}}, {{slug}}, {{siteName}},
- * {{nav}} and {{body}}. The page body goes in last and is never scanned, so copy can contain braces.
+ * Fills a theme's layout.html. Placeholders are {{title}}, {{description}}, {{descriptionTag}}, {{indexing}}, {{slug}},
+ * {{siteName}}, {{nav}} and {{body}}. {{descriptionTag}} is the whole description meta tag, or nothing for a page
+ * without a description. The page body goes in last and is never scanned, so copy can contain braces.
  */
 export function renderPage(page: Page, body: string, site: Site, layout: string): string {
   const isHome = page.path === '/';
   const title = isHome ? site.siteName : `${page.title} — ${site.siteName}`;
   const values: Record<string, string> = {
     title: escapeHtml(title),
-    description: escapeHtml(page.description),
+    description: escapeHtml(page.description ?? ''),
+    descriptionTag: page.description ? `<meta name="description" content="${escapeHtml(page.description)}">` : '',
     indexing: page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${escapeHtml(site.origin + page.path)}">`,
     slug: isHome ? 'home' : page.path.replace(/^\/+|\/+$/g, '').replace(/\//g, '-'),
     siteName: escapeHtml(site.siteName),

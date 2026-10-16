@@ -31,19 +31,27 @@ export function parseSiteConfig(input: unknown): SiteConfig {
   if (pages.length === 0) problems.push('pages is empty');
 
   const paths = new Set<string>();
+  const addresses = new Map<string, string>(); // "/about" and "/about/" are one address to Cloudflare
   for (const page of pages) {
     const name = `page "${page?.path ?? '?'}"`;
     if (!isText(page?.path) || !page.path.startsWith('/')) problems.push(`${name}: path must start with /`);
     if (!isText(page?.title)) problems.push(`${name}: title is missing`);
-    if (!isText(page?.description)) problems.push(`${name}: description is missing`);
+    if (page?.description !== undefined && !isText(page.description)) problems.push(`${name}: description is empty; leave it out or write one`);
     if (!isText(page?.file) || !/^[\w-]+\.html$/.test(page.file)) problems.push(`${name}: file must be a plain .html file name`);
     if (paths.has(page?.path)) problems.push(`${name} is listed twice`);
+    else if (isText(page?.path)) {
+      const address = page.path.replace(/\/+$/, '');
+      const other = addresses.get(address);
+      if (other !== undefined && other !== page.path) problems.push(`${name} is the same address as "${other}"; list it once`);
+      addresses.set(address, page.path);
+    }
     paths.add(page?.path);
   }
 
-  const internal = (href: unknown) => isText(href) && href.startsWith('/');
+  const internal = (href: unknown): href is string => isText(href) && href.startsWith('/');
   for (const item of nav.flatMap((n) => [n, ...(n.children ?? [])])) {
-    if (!isText(item?.label) || !isText(item?.href)) problems.push('every menu link needs a label and an href');
+    const folder = Array.isArray(item?.children) && item.children.length > 0 && item.href === undefined;
+    if (!isText(item?.label) || (!folder && !isText(item?.href))) problems.push('every menu link needs a label and an href');
     else if (internal(item.href) && !paths.has(item.href)) problems.push(`menu link "${item.label}" points to ${item.href}, which is not a page`);
   }
   for (const [from, to] of Object.entries(redirects)) {

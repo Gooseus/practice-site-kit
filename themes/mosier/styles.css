@@ -1,0 +1,553 @@
+/* mosier: lifted from scottrowerphd.com, a WordPress site on Theme X (Integrity Light stack) with Cornerstone pages.
+   Sizes, colours and spacing were measured from the live site with the browser at 390, 768 and 1400px wide.
+   Breakpoints follow the old theme: the menu collapses below 979px, columns stack below 767px. */
+
+@font-face { font-family: "Lato"; src: url("/fonts/lato-regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Lato"; src: url("/fonts/lato-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Lato"; src: url("/fonts/lato-bold.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Lato"; src: url("/fonts/lato-bold-italic.woff2") format("woff2"); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: "Handlee"; src: url("/fonts/handlee.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Comfortaa"; src: url("/fonts/comfortaa.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+
+:root {
+  --text: rgb(82, 82, 82);
+  --heading: #272727;
+  --link: rgb(13, 167, 2);
+  --link-hover: rgb(10, 136, 1);
+  --page: #f3f3f3;
+  --nav: #999;
+  --rule: #f2f2f2;
+  --shadow: 0 3.6px 8.4px rgba(0, 0, 0, 0.133);
+  --site-width: 91%;
+  --site-max: 1200px;
+}
+
+/* Base */
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 24px; -webkit-text-size-adjust: 100%; overflow-x: hidden; }
+body {
+  margin: 0;
+  overflow-x: hidden;
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--page);
+}
+img { max-width: 100%; height: auto; vertical-align: middle; border: 0; }
+iframe { border: 0; }
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--link-hover); }
+p { margin: 0 0 1.313em; }
+ul, ol { margin: 0 0 1.313em 1.655em; padding: 0; }
+li > ul, li > ol { margin-bottom: 0; }
+strong, b { font-weight: 700; }
+hr { height: 0; margin: 1.313em 0; border: 0; border-top: 1px solid var(--rule); }
+pre {
+  margin: 0 0 1.313em;
+  padding: 0.786em 1.071em;
+  font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+  font-size: 1.15em;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #555;
+  background: #f7f7f9;
+  border: 1px solid #e1e1e8;
+  border-radius: 4px;
+}
+/* Empty headings left in the old pages; they still space the page by their margins. */
+[class^="empty-h"] { margin: 1.25em 0 0.2em; }
+.empty-h4 { font-size: 171.4%; margin: 1.75em 0 0.5em; }
+.empty-h5 { font-size: 150%; margin: 1.75em 0 0.5em; }
+.empty-h6 { font-size: 100%; margin: 1.75em 0 0.5em; }
+mark { padding: 0.188em 0.375em; color: #fff; background: #ff2a13; border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.65); }
+blockquote {
+  margin: 1.313em 0;
+  padding: 1em 0;
+  border-block: 1px solid var(--rule);
+  font-size: 171.4%;
+  line-height: 1.3;
+  color: var(--heading);
+}
+.skip-link, .visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+.skip-link:focus { width: auto; height: auto; clip: auto; left: 10px; top: 10px; z-index: 2000; padding: 8px 12px; background: #fff; color: var(--heading); }
+
+/* Headings: Handlee, sized as the old theme's percentages of the 24px base. */
+h1, h2, h3, h4, h5, h6, .h3 {
+  margin: 1.25em 0 0.2em;
+  font-family: "Handlee", cursive;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  color: var(--heading);
+  text-rendering: optimizeLegibility;
+}
+h1 { margin-top: 1em; font-size: 400%; line-height: 1.1; }
+h2 { font-size: 285.7%; line-height: 1.2; }
+h3, .h3 { font-size: 228.5%; line-height: 1.3; }
+h4, h5, h6 { margin-top: 1.75em; margin-bottom: 0.5em; line-height: 1.4; }
+h4 { font-size: 171.4%; }
+h5 { font-size: 150%; }
+h6 { font-size: 100%; text-transform: uppercase; }
+.h3 { line-height: 1.1; }
+
+/* Header: a white logo bar, then the menu bar. */
+.logobar { position: relative; z-index: 1030; padding: 5px 0; text-align: center; background: #fff; border-bottom: 1px solid var(--rule); }
+.brand { display: inline-block; width: var(--site-width); max-width: var(--site-max); font-size: 42px; line-height: 1; }
+.brand img { width: 100%; }
+.navbar {
+  position: relative;
+  z-index: 1030;
+  min-height: 76px;
+  text-align: center;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  box-shadow: var(--shadow);
+}
+.site-nav { display: table; margin: 0 auto; }
+.site-nav ul, .mobile-nav ul { margin: 0; padding: 0; list-style: none; }
+.site-nav > ul > li { position: relative; float: left; }
+.site-nav > ul > li > a {
+  display: block;
+  height: 75px;
+  padding: 37px calc(20px - 0.085em) 0 20px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+  color: var(--nav);
+}
+.site-nav > ul > li > a:not([href]) { cursor: default; }
+.site-nav > ul > li > a:hover, .site-nav > ul > li:focus-within > a, .site-nav > ul > li > a[aria-current], .site-nav .has-menu:has([aria-current]) > a {
+  color: var(--heading);
+  box-shadow: inset 0 4px 0 0 var(--link);
+}
+.site-nav .has-menu:hover > a { color: var(--heading); box-shadow: inset 0 4px 0 0 var(--link); }
+/* The double chevron after a folder's name (Font Awesome's angle-double-down on the old site). */
+.site-nav .has-menu > a::after {
+  content: "";
+  display: inline-block;
+  width: 0.62em;
+  height: 0.8em;
+  margin: 0 0 0 0.35em;
+  vertical-align: -0.1em;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 13'%3E%3Cpath d='M1 1.5l4 4 4-4M1 7l4 4 4-4' fill='none' stroke='black' stroke-width='2.2'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 13'%3E%3Cpath d='M1 1.5l4 4 4-4M1 7l4 4 4-4' fill='none' stroke='black' stroke-width='2.2'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* Dropdown: kept focusable while hidden so keyboard users can tab into it. */
+.site-nav .has-menu > ul {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  z-index: 1000;
+  min-width: 200px;
+  padding: 9px 0;
+  font-size: 12px;
+  text-align: left;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+}
+.site-nav .has-menu:hover > ul, .site-nav .has-menu:focus-within > ul { opacity: 1; pointer-events: auto; }
+.site-nav .has-menu li a { display: block; padding: 0.5em 1.6em; line-height: 1.7; white-space: nowrap; color: var(--nav); }
+.site-nav .has-menu li a:hover, .site-nav .has-menu li a[aria-current] { color: var(--heading); background: rgba(0, 0, 0, 0.016); }
+
+.mobile-nav { display: none; line-height: 1; }
+.mobile-nav summary {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 20px;
+  padding: 11px 15px;
+  line-height: 1;
+  cursor: pointer;
+  list-style: none;
+  color: #b7b7b7;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+}
+.mobile-nav summary::-webkit-details-marker { display: none; }
+.mobile-nav summary:hover, .mobile-nav[open] summary { color: #919191; background: #f7f7f7; box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.25); }
+/* Three bars, the size of the old 24px Font Awesome icon. */
+.burger { position: relative; display: block; width: 21px; height: 24px; }
+.burger::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 21px;
+  height: 3px;
+  background: currentColor;
+  border-radius: 1px;
+  box-shadow: 0 7px 0 currentColor, 0 14px 0 currentColor;
+}
+.mobile-nav nav { width: var(--site-width); margin: 25px auto; text-align: left; }
+.mobile-nav li > a {
+  display: block;
+  margin: 0 0 -1px;
+  padding: 14px 0;
+  border-block: 1px solid var(--rule);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--nav);
+}
+.mobile-nav > nav > ul > li > a { font-weight: 700; letter-spacing: 0.085em; text-transform: uppercase; }
+.mobile-nav ul ul { margin-left: 2.25em; }
+.mobile-nav a:hover, .mobile-nav a[aria-current] { color: var(--heading); }
+
+/* Breadcrumb bar, with previous and next arrows on posts. */
+.breadcrumbs {
+  display: flow-root;
+  padding: 10.5px max(calc((100% - var(--site-max)) / 2), 4.5%);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+  background: rgba(0, 0, 0, 0.024);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.714);
+}
+.breadcrumbs ol { float: left; width: 85%; margin: 0; padding: 0; list-style: none; }
+.breadcrumbs li { display: inline-block; }
+.breadcrumbs li + li::before {
+  content: "";
+  display: inline-block;
+  width: 0.4em;
+  height: 0.7em;
+  margin: 0 0.25em 0 0.45em;
+  background: var(--nav);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 7'%3E%3Cpath d='M.5.5l3 3-3 3' fill='none' stroke='black'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 7'%3E%3Cpath d='M.5.5l3 3-3 3' fill='none' stroke='black'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.breadcrumbs a { color: var(--nav); }
+.breadcrumbs a[aria-current] { color: var(--heading); }
+.crumb-home::before, .post-nav a::before {
+  content: "";
+  display: inline-block;
+  width: 1.1em;
+  height: 1em;
+  vertical-align: -0.1em;
+  background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+.crumb-home { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 10'%3E%3Cpath d='M5.5 0L0 5h1.5v5h3V7h2v3h3V5H11z'/%3E%3C/svg%3E"); }
+.post-nav { float: right; width: 10%; margin: 0; text-align: right; }
+.post-nav a { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'%3E%3Cpath d='M9.5 4h-9M3.5 1l-3 3 3 3' fill='none' stroke='black'/%3E%3C/svg%3E"); }
+.post-nav a.next { margin-left: 0.5em; --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'%3E%3Cpath d='M.5 4h9M6.5 1l3 3-3 3' fill='none' stroke='black'/%3E%3C/svg%3E"); }
+
+/* The white card each page sits in. Cornerstone pages (.cs) used an inner 91% column. */
+main { display: flow-root; }
+.card {
+  width: var(--site-width);
+  max-width: var(--site-max);
+  margin: 40px auto;
+  padding: 60px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+}
+.card > .entry-title { margin: 0; font-size: 250%; line-height: 1.05; }
+.card > .entry-title + .entry { margin-top: 30px; }
+.cs { width: var(--site-width); max-width: var(--site-max); margin: 0 auto; }
+/* A few pages widened their section with negative side margins (1.32em unless the page says) before taking the 91%. */
+.cs-wide {
+  --sec-l: 1.32em;
+  --sec-r: 1.32em;
+  width: calc((100% + var(--sec-l) + var(--sec-r)) * 0.91);
+  margin-left: calc((100% + var(--sec-l) + var(--sec-r)) * 0.045 - var(--sec-l));
+  margin-right: 0;
+}
+/* Cornerstone sections and containers with negative top margins pulled the first block up into the card's padding. */
+.pull-5 > .entry { margin-top: -5px; }
+.pull-15 > .entry { margin-top: -15px; }
+.pull-75 > .entry { margin-top: -75px; }
+.entry > :last-child, .entry > .cols:last-child > div > :last-child { margin-bottom: 0; }
+.plain { padding: 0 0 10px; background: #fff; }
+
+/* Layout helpers from the old page builder. A row stands for one of its containers: margins never collapse across it. */
+.row { display: flow-root; }
+.stack { display: flex; flex-direction: column; gap: 20px; }
+.stack-24 { gap: 24px; }
+.stack > .col { display: flow-root; }
+.center { text-align: center; }
+.right { text-align: right; }
+.cols { display: flex; gap: 0 4%; }
+.cols > div { min-width: 0; }
+.cols-2-1 > :first-child { flex: 0 0 65.33332%; }
+.cols-2-1 > :last-child { flex: 0 0 30.66666%; }
+.cols-3 > div { flex: 0 0 30.66666%; }
+.cols-2 > div { flex: 0 0 48%; }
+.spacer, .spacer-m, .spacer-s, .spacer-l { height: 0; margin: 50px 0 0; border-top: 1px solid transparent; }
+.spacer-l { margin-top: 65px; }
+.spacer-m { margin-top: 40px; }
+.spacer-s { margin-top: 30px; }
+.para-gap { margin: 0 0 1.313em; }
+.gap-5 { height: 5px; }
+.gap-10 { height: 10px; }
+.gap-15 { height: 15px; }
+.gap-20 { height: 20px; }
+.gap-25 { height: 25px; }
+.gap-45 { height: 45px; }
+.gap-48 { height: 48px; }
+.gap-65 { height: 65px; }
+.text > :first-child { margin-top: 0; }
+.text > :last-child { margin-bottom: 0; }
+.lh-14 { line-height: 1.4; }
+/* Margins the page builder set on single containers (Getting Clarity, New Clients, Therapy for Trauma). */
+.mt-7 { margin-top: 7px; }
+.mt-n8 { margin-top: -8px; }
+.mb-n5 { margin-bottom: -5px; }
+.mb-n24 { margin-bottom: -24px; }
+.mb-n60 { margin-bottom: -60px; }
+.rule { width: 100%; margin: -12px -12px 38px; border: 0; border-top: 4px double rgba(0, 0, 0, 0.35); }
+.thin-rule { border-top-color: #f2f2f2; }
+.indent { padding-left: 40px; }
+.indent-s { padding-left: 30px; }
+.no-bullet { list-style: none; }
+
+/* Text colours picked in the old editor. */
+.green { color: #008000; }
+.blue { color: #4285f4; }
+.blue-soft { color: #4885ed; }
+.sea-green { color: #339966; }
+.red { color: #db4437; }
+.bright-red { color: #ff0000; }
+.royal-blue { color: #3366ff; }
+.pure-blue { color: #0000ff; }
+.dark-green { color: #003300; }
+.leaf-green { color: #34a853; }
+.brown { color: #7d441d; }
+.black { color: #000; }
+.white { color: #fff; }
+.bar-green { background: #1a9431; }
+.arial { font-family: Arial, Helvetica, sans-serif; }
+.xx-large { font-size: xx-large; }
+.headline, .headline-sub { margin: 0; font-family: "Comfortaa", sans-serif; font-weight: 400; letter-spacing: 0; line-height: 1.4; text-align: center; }
+.headline { font-size: 2em; }
+.headline-sub { font-size: 1.1em; color: var(--heading); }
+
+/* Images */
+.circle, .rounded { display: block; margin: 0 auto 1.313em; }
+.circle { border-radius: 100em; }
+.rounded { border-radius: 6px; }
+a:has(> .circle) { display: block; transition: opacity 0.3s ease; }
+a:has(> .circle):hover { opacity: 0.75; }
+.cols img:not(.circle):not(.rounded) { display: block; margin-bottom: 1.313em; }
+.aligncenter { display: block; margin: 0 auto 1.313em; }
+.alignright { float: right; margin: 0.35em 0 0.35em 1.313em; }
+.alignleft { float: left; margin: 0.35em 1.313em 0.35em 0; }
+.w-300 { width: 300px; }
+.w-500 { width: 500px; }
+.w-700 { width: 700px; }
+/* The old theme cleared .entry-content with display:table pseudo-elements, so a leading empty paragraph keeps its space. */
+.entry::before, .entry::after { content: ""; display: table; }
+.entry::after { clear: both; }
+
+/* Tick and cross lists (Font Awesome icons on the old site). */
+.checks, .crosses { margin-left: 1.5em; list-style: none; }
+.checks li::before, .crosses li::before {
+  content: "";
+  display: inline-block;
+  width: 1.1em;
+  height: 0.9em;
+  margin-left: -1.5em;
+  margin-right: 0.4em;
+  vertical-align: -0.05em;
+  background: var(--mark-colour);
+  -webkit-mask: var(--mark) center / contain no-repeat;
+  mask: var(--mark) center / contain no-repeat;
+}
+.checks li::before { --mark-colour: rgb(1, 177, 32); --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 13'%3E%3Cpath d='M1 7l4.5 4.5L15 1.5' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E"); }
+.crosses li::before { --mark-colour: #fa0505; --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 1.5l9 9m0-9l-9 9' fill='none' stroke='black' stroke-width='2.4'/%3E%3C/svg%3E"); }
+.center .checks, .center .crosses, .checks.center { display: block; }
+
+/* Buttons. The jumbo button on the home page sits inside a hand-drawn loop (drawn for this theme; the old one was
+   an image from Theme X). */
+.button-row { margin: 0 0 1.313em; text-align: center; }
+.button {
+  display: inline-block;
+  margin-bottom: 0.25em;
+  padding: 0.579em 1.105em 0.842em;
+  font-size: 19px;
+  line-height: 1.3;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 0.075em 0.075em rgba(0, 0, 0, 0.5);
+  background: rgb(1, 159, 42);
+  border: 1px solid rgb(0, 128, 34);
+  border-radius: 100em;
+  box-shadow: 0 0.25em 0 0 rgb(0, 128, 34), 0 4px 9px rgba(0, 0, 0, 0.75);
+}
+.button:hover { color: #fff; background: hsl(136, 100%, 35%); border-color: rgb(0, 144, 38); box-shadow: 0 0.25em 0 0 rgb(0, 144, 38), 0 4px 9px rgba(0, 0, 0, 0.75); }
+.button svg { margin-right: 0.5em; vertical-align: -0.1em; }
+.button-jumbo { padding: 0.643em 1.429em 0.786em; font-size: 28px; border-radius: 0.225em; }
+.button-circle { display: table; margin: 0 auto 21px; }
+.button-circle::before, .button-circle::after {
+  content: "";
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  background: center / contain no-repeat;
+}
+.button-circle::before {
+  top: 2px;
+  width: 172px;
+  height: 43px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 172 43'%3E%3Cg fill='none' stroke='%23151515' stroke-linecap='round'%3E%3Cpath d='M10 42C2 24 34 8 86 5c40-2 72 6 78 24' stroke-width='7'/%3E%3Cpath d='M16 41C10 23 44 11 90 9c36-1 66 7 70 23' stroke-width='5' opacity='.85'/%3E%3Cpath d='M6 38C4 20 40 3 92 3c34 0 62 7 70 18l-6 5' stroke-width='3.5' opacity='.7'/%3E%3C/g%3E%3C/svg%3E");
+}
+.button-circle::after {
+  bottom: 2px;
+  width: 190px;
+  height: 43px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 190 43'%3E%3Cg fill='none' stroke='%23151515' stroke-linecap='round'%3E%3Cpath d='M8 2C2 22 40 38 98 38c48 0 82-13 84-35' stroke-width='7'/%3E%3Cpath d='M16 1c-2 19 34 32 82 33 42 1 74-10 80-28' stroke-width='5' opacity='.85'/%3E%3Cpath d='M4 6c4 20 46 35 96 35 44 0 78-11 86-31' stroke-width='3.5' opacity='.7'/%3E%3C/g%3E%3C/svg%3E");
+}
+.button-circle .button { position: relative; z-index: 2; }
+/* White pill with blue text, from the newer page-builder pages. */
+.pill {
+  display: inline-block;
+  padding: 0.575em 0.85em;
+  line-height: 1;
+  font-size: 1.1em;
+  color: #4285f4;
+  background: #fff;
+  border-radius: 0.35em;
+  box-shadow: 0 0.15em 0.65em rgba(0, 0, 0, 0.25);
+}
+.pill:hover { color: var(--link); }
+.pill { padding: 18.8px 25.4px; } /* 0.575em and 0.85em of the 24px base, plus the 5px margin round the old label */
+
+/* Call-to-action box with a button beside the message. */
+.prompt {
+  margin: 0 0 1.313em;
+  padding: 1.75em;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 0.125em 0.275em rgba(0, 0, 0, 0.075);
+}
+.prompt-message, .prompt > .button-row { display: table-cell; vertical-align: middle; }
+.prompt-message { width: 46%; padding-right: 2.25em; font-size: 16px; line-height: 1.4; }
+.prompt-message h2 { margin-top: 0; font-size: 28px; line-height: 1.1; }
+.prompt-message p:last-child { margin-bottom: 0; }
+.prompt > .button-row { width: 30%; margin: 0; }
+.prompt .button { display: block; }
+
+/* Accordions */
+.accordion { margin-bottom: 1.313em; }
+.accordion details { margin: 0 0 8px; border: 1px solid rgba(0, 0, 0, 0.15); box-shadow: 0 0.125em 0.275em rgba(0, 0, 0, 0.125); }
+.accordion summary {
+  display: block;
+  padding: 10px 15px;
+  font-size: 114.2%;
+  color: var(--heading);
+  background: #fff;
+  cursor: pointer;
+  list-style: none;
+}
+.accordion summary::-webkit-details-marker { display: none; }
+.accordion summary::before { content: "+"; display: inline-block; width: 1em; margin-right: 0.25em; color: #ccc; font-size: 0.7em; text-align: center; transition: transform 0.3s ease; }
+.accordion details[open] summary::before { transform: rotate(45deg); }
+.accordion summary:hover { color: var(--link); }
+.accordion details > div { padding: 10px 15px; border-top: 1px solid rgba(0, 0, 0, 0.15); background: #fff; }
+.accordion details > div > :last-child { margin-bottom: 0; }
+
+/* Embedded video and audio. Most sit in a paragraph at full width and the height the editor gave them; the one
+   block-editor embed keeps 16:9. */
+.entry iframe { width: 100%; }
+.embed { position: relative; margin: 0 0 1.313em; aspect-ratio: 16 / 9; }
+.embed iframe { position: absolute; inset: 0; height: 100%; }
+
+/* Blog listing: cards in three columns, each column filled the way the old masonry grid laid them out. */
+.post-grid {
+  display: flex;
+  width: calc(var(--site-width) + 48px);
+  max-width: calc(var(--site-max) + 48px);
+  margin: 40px 0 40px calc((100% - min(var(--site-width), var(--site-max))) / 2 - 24px);
+}
+.post-column { flex: 0 0 33.28%; min-width: 0; }
+.post-card { padding: 0 24px 48px; }
+.post-thumb { display: block; }
+.post-thumb img { display: block; width: 100%; }
+.post-thumb { box-shadow: 4px 2px 4px -4px rgba(0, 0, 0, 0.133), -4px 2px 4px -4px rgba(0, 0, 0, 0.133); }
+.post-thumb:has(img) { border-bottom: 1px solid #ddd; }
+.post-video { aspect-ratio: 16 / 9; }
+.post-card-body {
+  padding: 7.75% 8.25%;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+}
+.post-card:has(.post-thumb) .post-card-body { border-radius: 0 0 4px 4px; }
+.post-card h2 { margin: 0 0 30px; font-size: 165%; line-height: 1.05; }
+.post-card h2 a { color: var(--heading); }
+.post-card h2 a:hover { color: var(--link); }
+.post-card p:last-child { margin-bottom: 0; }
+.post-card-body > p:first-child { margin-top: 30px; } /* the old card kept the space of a title even when it was empty */
+.more-link { display: inline-block; font-size: 105%; font-weight: 700; line-height: 1.4; }
+.pagination { height: 32px; margin: 0 0 40px; text-align: center; }
+.pagination ul { display: inline-block; margin: 0; padding: 0; list-style: none; }
+.pagination li { display: inline; }
+.pagination a, .pagination span {
+  float: left;
+  width: 32px;
+  height: 32px;
+  margin: 0 0.35em;
+  font-size: 13px;
+  line-height: 32px;
+  color: #bababa;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.85);
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0.1em 0.45em rgba(0, 0, 0, 0.25);
+}
+.pagination a:hover { color: #7a7a7a; }
+.pagination [aria-current] { color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65); background: var(--link); box-shadow: inset 0 0.1em 0.35em rgba(0, 0, 0, 0.65), 0 1px 0 rgba(255, 255, 255, 0.95); }
+
+/* Wide screens: the blog cards float their picture beside the title, as the old site's custom CSS did. */
+@media (min-width: 979px) {
+  .post-card { display: flow-root; }
+  .post-card .post-thumb { float: left; width: 36%; margin: 150px 10px 10px; position: relative; z-index: 1; }
+  /* Cards without a picture still had the empty, floated picture box, which indents their first lines. */
+  .post-card:not(:has(.post-thumb))::before { content: ""; float: left; width: 36%; margin: 150px 10px 10px; }
+}
+
+/* Below 979px: the menu collapses behind a button, and the blog shows two columns in posting order. */
+@media (max-width: 978.98px) {
+  .site-nav { display: none; }
+  .mobile-nav { display: block; }
+  .post-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
+  .post-column { display: contents; }
+  .post-card { order: var(--n); }
+  .post-card-body { padding: 6.75% 7.25%; }
+  .post-card h2 { font-size: 200%; }
+  .more-link { font-size: 128.5%; }
+}
+
+/* Below 767px: columns stack, the card loses some padding and the breadcrumb bar centres. */
+@media (max-width: 766.98px) {
+  .card { padding: 36px; }
+  .cols { display: block; }
+  .breadcrumbs ol { float: none; width: 100%; text-align: center; }
+  .post-nav { float: none; width: 100%; margin-top: 0.65em; text-align: center; }
+  .post-grid { grid-template-columns: 1fr; }
+  .prompt-message, .prompt > .button-row { display: block; width: 100%; }
+  .prompt-message { padding: 0 0 1.25em; }
+  .button-circle::before { width: 112px; height: 28px; }
+  .button-circle::after { width: 127px; height: 29px; }
+  .alignright, .alignleft { float: none; margin: 0 auto 1.313em; display: block; }
+}
+
+@media (max-width: 479.98px) {
+  .card { padding: 25px; }
+  .card > .entry-title { font-size: 200%; }
+  .post-card-body { padding: 7.75% 8.25%; }
+}

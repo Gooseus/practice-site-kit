@@ -125,3 +125,23 @@ test('buildSite lets a theme layout include the site\'s own partials', async (t)
   assert.equal(await readFile(join(root, 'dist/about.html'), 'utf8'), '<main><h1>About</h1><img src="/images/a.png" alt=""></main><footer><p>1105 Wilson Street</p></footer>');
   assert.ok((await readdir(join(root, 'dist'))).includes('plain.css'));
 });
+
+test('buildSite writes a trailing-slash page as an index.html in its own folder', async (t) => {
+  // Arrange
+  const root = await fixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const config = JSON.parse(await readFile(join(root, 'site.json'), 'utf8'));
+  config.pages.push({ path: '/blog/page/2/', title: 'Blog', file: 'blog-2.html', description: 'Older posts.' });
+  await writeFile(join(root, 'site.json'), JSON.stringify(config));
+  await writeFile(join(root, 'content/pages/blog-2.html'), '<h1>Older posts</h1>');
+
+  // Act
+  await buildSite({ root });
+  const built = await readBuiltSite(root);
+
+  // Assert
+  assert.match(built.html['blog/page/2/index.html'], /<h1>Older posts<\/h1>/);
+  assert.match(built.html['blog/page/2/index.html'], /<link rel="canonical" href="https:\/\/www\.example\.com\/blog\/page\/2\/">/);
+  assert.ok(built.files.has('about.html'), 'a path without a slash still builds a flat file');
+  assert.match(await readFile(join(root, 'dist/sitemap.xml'), 'utf8'), /<loc>https:\/\/www\.example\.com\/blog\/page\/2\/<\/loc>/);
+});

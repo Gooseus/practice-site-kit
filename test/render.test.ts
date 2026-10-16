@@ -176,3 +176,81 @@ test('renderPage rejects a layout placeholder it does not know', () => {
   // Assert
   assert.throws(render, /Unknown layout placeholder: tagline/);
 });
+
+test('outputPath writes a path ending in a slash to an index.html in its own folder', () => {
+  // Arrange
+  const paths = ['/about/', '/blog/page/2/', '/about', '/'];
+
+  // Act
+  const files = paths.map(outputPath);
+
+  // Assert
+  assert.deepEqual(files, ['about/index.html', 'blog/page/2/index.html', 'about.html', 'index.html']);
+});
+
+test('renderNav marks the current page when paths end in a slash', () => {
+  // Arrange
+  const nav: NavItem[] = [{ label: 'Home', href: '/' }, { label: 'About', href: '/about/' }, { label: 'Blog', href: '/blog/' }];
+
+  // Act
+  const html = renderNav(nav, '/about/');
+
+  // Assert
+  assert.equal(html.match(/aria-current="page"/g)?.length, 1);
+  assert.match(html, /<a href="\/about\/" aria-current="page">About<\/a>/);
+});
+
+test('renderNav renders a folder without an address as a link with no href', () => {
+  // Arrange
+  const nav: NavItem[] = [{ label: 'Specialties', children: [{ label: 'Anxiety', href: '/therapy-for-anxiety/' }] }];
+
+  // Act
+  const html = renderNav(nav, '/therapy-for-anxiety/');
+
+  // Assert
+  assert.equal(html, '<ul><li class="has-menu"><a>Specialties</a><ul><li><a href="/therapy-for-anxiety/" aria-current="page">Anxiety</a></li></ul></li></ul>');
+});
+
+test('renderPage keeps the trailing slash in the canonical URL and drops it from the body class', () => {
+  // Arrange
+  const pages: Page[] = [
+    { path: '/about/', title: 'About', description: 'd', file: 'about.html' },
+    { path: '/blog/page/2/', title: 'Blog', description: 'd', file: 'blog-page-2.html' },
+  ];
+
+  // Act
+  const [about, blog2] = pages.map((page) => renderPage(page, '', { siteName: 'S', origin: 'https://scottrowerphd.com', nav: [] }, LAYOUT));
+
+  // Assert
+  assert.match(about, /<link rel="canonical" href="https:\/\/scottrowerphd\.com\/about\/">/);
+  assert.match(about, /<body class="page-about">/);
+  assert.match(blog2, /<link rel="canonical" href="https:\/\/scottrowerphd\.com\/blog\/page\/2\/">/);
+  assert.match(blog2, /<body class="page-blog-page-2">/);
+});
+
+test('renderSitemap lists trailing-slash pages at their exact address', () => {
+  // Arrange
+  const pages: Page[] = [{ path: '/', title: 'H', description: 'd', file: 'h.html' }, { path: '/about/', title: 'A', description: 'd', file: 'a.html' }];
+
+  // Act
+  const xml = renderSitemap(pages, 'https://scottrowerphd.com');
+
+  // Assert
+  assert.match(xml, /<loc>https:\/\/scottrowerphd\.com\/<\/loc>/);
+  assert.match(xml, /<loc>https:\/\/scottrowerphd\.com\/about\/<\/loc>/);
+});
+
+test('renderPage fills {{descriptionTag}} with a description meta tag, or with nothing when the page has none', () => {
+  // Arrange
+  const layout = '<head>{{descriptionTag}}</head>';
+  const described: Page = { path: '/about/', title: 'About', description: 'Scott "the psychologist" & more', file: 'about.html' };
+  const bare: Page = { path: '/about/', title: 'About', file: 'about.html' };
+  const site = { siteName: 'S', origin: 'https://scottrowerphd.com', nav: [] };
+
+  // Act
+  const [withTag, withoutTag] = [described, bare].map((page) => renderPage(page, '', site, layout));
+
+  // Assert
+  assert.equal(withTag, '<head><meta name="description" content="Scott &quot;the psychologist&quot; &amp; more"></head>');
+  assert.equal(withoutTag, '<head></head>');
+});

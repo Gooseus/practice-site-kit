@@ -3,25 +3,31 @@
 const ATTR = /\b(?:href|src)=["']([^"']*)["']/gi;
 const SRCSET = /\bsrcset=["']([^"']*)["']/gi;
 
-/** The built file a link or image address should resolve to, or null when it points off the site. */
-export function targetFile(ref: string, fromFile: string): string | null {
+/**
+ * The built files that can answer a link or image address, best match first, or null when it points off the site.
+ * A page address can be built as a flat file (about.html) or a folder (about/index.html); Cloudflare's
+ * auto-trailing-slash serves either one at /about and /about/, redirecting from the other form.
+ */
+export function targetFiles(ref: string, fromFile: string): string[] | null {
   if (!ref || ref.startsWith('#') || ref.startsWith('//') || /^[a-z][a-z0-9+.-]*:/i.test(ref)) return null;
   const url = new URL(ref, `https://site.invalid/${fromFile}`);
-  const path = decodeURIComponent(url.pathname).replace(/^\/+|\/+$/g, '');
-  if (path === '') return 'index.html';
-  return /\.[a-z0-9]+$/i.test(path) ? path : `${path}.html`;
+  const pathname = decodeURIComponent(url.pathname);
+  const path = pathname.replace(/^\/+|\/+$/g, '');
+  if (path === '') return ['index.html'];
+  if (/\.[a-z0-9]+$/i.test(path)) return [path];
+  return pathname.endsWith('/') ? [`${path}/index.html`, `${path}.html`] : [`${path}.html`, `${path}/index.html`];
 }
 
 /** Every internal link, image and stylesheet must lead to a built file or to an old address that redirects. */
 export function checkLinks(html: Record<string, string>, files: Set<string>, redirects: Record<string, string>): string[] {
-  const redirected = new Set(Object.keys(redirects).map((from) => targetFile(from, 'index.html')));
+  const redirected = new Set(Object.keys(redirects).flatMap((from) => targetFiles(from, 'index.html') ?? []));
   const issues: string[] = [];
   for (const [file, source] of Object.entries(html)) {
     const refs = [...source.matchAll(ATTR)].map((m) => m[1]);
     for (const m of source.matchAll(SRCSET)) refs.push(...m[1].split(',').map((part) => part.trim().split(/\s+/)[0]));
     for (const ref of new Set(refs)) {
-      const target = targetFile(ref, file);
-      if (target && !files.has(target) && !redirected.has(target)) issues.push(`${file}: link to ${ref} goes nowhere`);
+      const targets = targetFiles(ref, file);
+      if (targets && !targets.some((t) => files.has(t) || redirected.has(t))) issues.push(`${file}: link to ${ref} goes nowhere`);
     }
   }
   return issues;

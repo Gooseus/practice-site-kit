@@ -56,7 +56,7 @@ test('parseSiteConfig reports every problem at once, in plain words', () => {
       'origin must look like https://www.example.com',
       'page "contact": path must start with /',
       'page "contact": file must be a plain .html file name',
-      'page "contact": description is missing',
+      'page "contact": description is empty; leave it out or write one',
       'page "/about" is listed twice',
       'menu link "Gone" points to /gone, which is not a page',
       'redirect /about is also a page',
@@ -88,4 +88,64 @@ test('parseSiteConfig requires a theme name made of lowercase letters, digits an
   // Assert
   assert.throws(fail(missing), /theme must be a theme name like "sea-girt"/);
   assert.throws(fail(odd), /theme must be a theme name like "sea-girt"/);
+});
+
+test('parseSiteConfig accepts page paths that end in a slash, with menu links and redirects to them', () => {
+  // Arrange
+  const input = {
+    ...valid(),
+    nav: [{ label: 'Home', href: '/' }, { label: 'About', href: '/about/' }, { label: 'Specialties', children: [{ label: 'Anxiety', href: '/therapy-for-anxiety/' }] }],
+    pages: [
+      { path: '/', title: 'Home', file: 'home.html', description: 'Welcome.' },
+      { path: '/about/', title: 'About', file: 'about.html', description: 'About Scott.' },
+      { path: '/therapy-for-anxiety/', title: 'Anxiety', file: 'therapy-for-anxiety.html', description: 'Anxiety.' },
+    ],
+    redirects: { '/anxiety-is-not-the-enemy-pt2/': '/about/' },
+  };
+
+  // Act
+  const parsed = parseSiteConfig(input);
+
+  // Assert
+  assert.deepEqual(parsed, input);
+});
+
+test('parseSiteConfig rejects the same page listed with and without a trailing slash', () => {
+  // Arrange
+  const input = valid();
+  input.pages.push({ path: '/about/', title: 'About', file: 'about-2.html', description: 'Again.' });
+
+  // Act
+  const act = () => parseSiteConfig(input);
+
+  // Assert
+  assert.throws(act, /page "\/about\/" is the same address as "\/about"/);
+});
+
+test('parseSiteConfig lets only a menu folder leave out its address', () => {
+  // Arrange
+  const folder = { ...valid(), nav: [{ label: 'Therapy', children: [{ label: 'About', href: '/about' }] }] };
+  const plain = { ...valid(), nav: [{ label: 'Therapy' }] };
+
+  // Act
+  const parse = (input: unknown) => () => parseSiteConfig(input);
+
+  // Assert
+  assert.doesNotThrow(parse(folder));
+  assert.throws(parse(plain), /every menu link needs a label and an href/);
+});
+
+test('parseSiteConfig lets a page leave out its description but not give a blank one', () => {
+  // Arrange
+  const missing = valid();
+  delete (missing.pages[1] as { description?: string }).description;
+  const blank = valid();
+  blank.pages[1].description = '  ';
+
+  // Act
+  const parse = (input: unknown) => () => parseSiteConfig(input);
+
+  // Assert
+  assert.doesNotThrow(parse(missing));
+  assert.throws(parse(blank), /page "\/about": description is empty; leave it out or write one/);
 });
