@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildSite, readBuiltSite } from '../src/build.ts';
+import { buildSite, readBuiltSite, themesDir } from '../src/build.ts';
 
 async function fixture(): Promise<string> {
   const root = await mkdtemp(join(tmpdir(), 'sitekit-'));
@@ -144,4 +144,18 @@ test('buildSite writes a trailing-slash page as an index.html in its own folder'
   assert.match(built.html['blog/page/2/index.html'], /<link rel="canonical" href="https:\/\/www\.example\.com\/blog\/page\/2\/">/);
   assert.ok(built.files.has('about.html'), 'a path without a slash still builds a flat file');
   assert.match(await readFile(join(root, 'dist/sitemap.xml'), 'utf8'), /<loc>https:\/\/www\.example\.com\/blog\/page\/2\/<\/loc>/);
+});
+
+test('themesDir turns the module address into a real folder path, spaces and Windows drives included', () => {
+  // Arrange
+  const mac = 'file:///Users/Scott%20Rower/Sites/maryrower/node_modules/practice-site-kit/dist/build.js';
+  const windows = 'file:///C:/Users/Scott%20Rower/Sites/maryrower/node_modules/practice-site-kit/dist/build.js';
+
+  // Act
+  const macDir = themesDir(mac, false);
+  const windowsDir = themesDir(windows, true);
+
+  // Assert
+  assert.equal(macDir, '/Users/Scott Rower/Sites/maryrower/node_modules/practice-site-kit/themes/');
+  assert.equal(windowsDir, 'C:\\Users\\Scott Rower\\Sites\\maryrower\\node_modules\\practice-site-kit\\themes\\');
 });

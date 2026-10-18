@@ -2,10 +2,16 @@
 // A theme is a folder in themes/ with a layout.html (see renderPage) and whatever stylesheets and fonts it needs.
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parseSiteConfig, type SiteConfig } from './config.ts';
 import { applyIncludes, outputPath, renderHeaders, renderPage, renderRedirects, renderRobots, renderSitemap } from './render.ts';
 
-const THEMES = new URL('../themes/', import.meta.url).pathname;
+/** The kit's themes folder as a real path. URL.pathname would keep %20 for spaces and a leading / before a Windows drive. */
+export function themesDir(moduleUrl: string, windows = process.platform === 'win32'): string {
+  return fileURLToPath(new URL('../themes/', moduleUrl), { windows });
+}
+
+const THEMES = themesDir(import.meta.url);
 
 export async function loadConfig(root: string): Promise<SiteConfig> {
   let raw: unknown;
