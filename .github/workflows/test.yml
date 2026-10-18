@@ -24,6 +24,15 @@ jobs:
           npm ci
           npm test
           npx tsc --noEmit
+      - name: maryrower.com exactly as its owner gets it (kit version pinned in its package.json)
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/ScottinOregon/maryrower.git as-owner
+          cd as-owner
+          npm ci
+          npm test
+          git status --porcelain
+          node -e "const c=require('crypto'),f=require('fs');for(const n of ['outfit','libre-bodoni']){const h=c.createHash('sha256').update(f.readFileSync('dist/fonts/'+n+'.woff2')).digest('hex');console.log(n,h)}"
       - name: Build and check maryrower.com with this kit
         shell: bash
         run: |
