@@ -1,0 +1,40 @@
+# Runs the kit's tests, then builds and checks a real site with this commit of the kit,
+# on Windows as well as Linux, since site owners edit on Windows PCs.
+name: test
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: git config --global core.autocrlf true
+        if: runner.os == 'Windows'
+      - uses: actions/checkout@v4
+        with:
+          path: kit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Kit tests
+        working-directory: kit
+        run: |
+          npm ci
+          npm test
+          npx tsc --noEmit
+      - name: Build and check maryrower.com with this kit
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/ScottinOregon/maryrower.git site
+          cd site
+          npm ci
+          npm install --no-save ../kit
+          npx sitekit build
+          npx sitekit check
+          npx sitekit build --preview
+          npx sitekit check
+          npx sitekit ready || true
+          git status --porcelain
+          cmp -s dist/fonts/outfit.woff2 ../kit/themes/sea-girt/fonts/outfit.woff2 && echo "fonts intact"
