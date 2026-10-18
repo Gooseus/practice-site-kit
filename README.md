@@ -9,8 +9,8 @@ photos and settings, and depends on a version of this kit.
 | `src/config.ts` | Reads and validates a site's `site.json` |
 | `src/build.ts` | the chosen theme + the site's `public/` + its pages -> `dist/` |
 | `src/checks.ts` | Broken links, images without alt text, protected facts still on the site |
-| `src/guard.ts` | Blocks changes outside `content/`, `public/images/` and `site.json`; flags changed facts |
-| `src/cli.ts` | `sitekit build [--preview]`, `sitekit check`, `sitekit guard [--base <ref>] [--allow-protected]` |
+| `src/guard.ts` | Blocks changes outside `content/`, `public/images/` and `site.json`; flags changed facts; lists unsaved files |
+| `src/cli.ts` | `sitekit build [--preview]`, `sitekit check`, `sitekit guard [--base <ref>] [--allow-protected]`, `sitekit ready` (fails while anything is unsaved; a site's `deploy` runs it first) |
 | `themes/<name>/` | One folder per look: `layout.html` (the page frame around each page) plus its stylesheet and fonts. `site.json` picks one with `"theme"`. `sea-girt` is Mary's; `hood-river` is Amy's and expects the site to supply its logo as `content/partials/logo.html`; `mosier` is Scott's, also with a logo partial, and has no footer because his old site had none. |
 | `rules.md` | Instructions for the AI working in a site repo. Each site's `CLAUDE.md` imports it. |
 

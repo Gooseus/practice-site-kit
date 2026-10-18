@@ -54,4 +54,7 @@ places was touched. If it reports a problem, fix it before showing anything. If 
 - **Show:** `npm run deploy:preview` puts the change on the private preview address in the site's `CLAUDE.md`. Ask before running it.
 - **Save:** when they say it looks right, commit it with a one-line message in plain words, like "Change the fax number on the Contact page".
 - **Undo:** `git revert` the commit, run `npm test`, and show the preview again. Never rewrite or delete history.
-- **Publish:** you can't put changes on the real site. Tell them it's ready and that the maintainer publishes it.
+  If the change was already published, they publish again after the undo.
+- **Publish:** you can't put changes on the real site yourself. Once it's saved and they've seen the preview, tell
+  them to type `! npm run deploy` in this window. It refuses if anything is unsaved, backs the saved history up to
+  GitHub, then puts the site live. If it fails, read them the message in plain words and don't try to work around it.

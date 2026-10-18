@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// sitekit build [--preview] | check | guard [--base <ref>] [--allow-protected]
+// sitekit build [--preview] | check | guard [--base <ref>] [--allow-protected] | ready
 // Run from the root of a site repo.
 import { execFileSync } from 'node:child_process';
 import { buildSite, loadConfig, readBuiltSite } from './build.ts';
 import { checkFacts, checkImages, checkLinks } from './checks.ts';
-import { changedProtected, classifyChanges } from './guard.ts';
+import { changedProtected, classifyChanges, unsavedFiles } from './guard.ts';
 
 const [command, ...args] = process.argv.slice(2);
 const root = process.cwd();
@@ -46,9 +46,16 @@ async function guard() {
   if (protectedChanges.length) console.log(`Protected details changed, as confirmed:\n${list(protectedChanges)}`);
 }
 
-const commands: Record<string, () => Promise<void>> = { build, check, guard };
+/** Publishing waits until every change is saved, so whatever is live can be found again, and undone, in the history. */
+async function ready() {
+  const unsaved = unsavedFiles(git('status', '--porcelain'));
+  if (unsaved.length) throw new Error(`Not published: these changes aren't saved yet. Save them (or undo them) first:\n${list(unsaved)}`);
+  console.log('Everything is saved.');
+}
+
+const commands: Record<string, () => Promise<void>> = { build, check, guard, ready };
 try {
-  if (!commands[command]) throw new Error('Usage: sitekit build [--preview] | check | guard [--base <ref>] [--allow-protected]');
+  if (!commands[command]) throw new Error('Usage: sitekit build [--preview] | check | guard [--base <ref>] [--allow-protected] | ready');
   await commands[command]();
 } catch (err) {
   console.error((err as Error).message);

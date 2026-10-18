@@ -22,3 +22,11 @@ export function changedProtected(before: Protected, after: Protected): string[] 
   }
   return changes;
 }
+
+/** Files with unsaved changes, from `git status --porcelain`. Publishing waits until this is empty, so the live site is always a saved version. */
+export function unsavedFiles(porcelain: string): string[] {
+  return porcelain
+    .split('\n')
+    .filter((line) => line.trim())
+    .map((line) => line.slice(3).split(' -> ').pop()!);
+}

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { changedProtected, classifyChanges } from '../src/guard.ts';
+import { changedProtected, classifyChanges, unsavedFiles } from '../src/guard.ts';
 
 test('classifyChanges allows content, images and the settings file, and blocks everything else', () => {
   // Arrange
@@ -53,4 +53,26 @@ test('changedProtected treats a theme switch as protected', () => {
 
   // Assert
   assert.deepEqual(changes, ['theme: sea-girt → hood-river']);
+});
+
+test('unsavedFiles lists every changed, new or deleted file from git status --porcelain', () => {
+  // Arrange
+  const porcelain = ' M content/pages/about.html\n?? public/images/new.jpg\n D content/pages/old.html\nR  content/pages/a.html -> content/pages/b.html\n';
+
+  // Act
+  const files = unsavedFiles(porcelain);
+
+  // Assert
+  assert.deepEqual(files, ['content/pages/about.html', 'public/images/new.jpg', 'content/pages/old.html', 'content/pages/b.html']);
+});
+
+test('unsavedFiles is empty when everything is saved', () => {
+  // Arrange
+  const porcelain = '';
+
+  // Act
+  const files = unsavedFiles(porcelain);
+
+  // Assert
+  assert.deepEqual(files, []);
 });
